@@ -1,0 +1,33 @@
+ul.menu {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #4dae4a;
+    text-align: center;
+}
+
+ul.menu li {
+    display : inline-block
+}
+
+ul.menu li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+
+ul.menu li a:hover {
+    background-color: green;
+}
+
+.footer {
+    position: relative;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: black;
+    color: white;
+    text-align: center;
+ }

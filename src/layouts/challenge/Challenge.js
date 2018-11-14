@@ -26,7 +26,7 @@ class Challenge extends Component {
     async handleGetStage() {
         let itemHash = this.state['itemHash'];
         console.log('itemHash ',itemHash);
-        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.toHex(itemHash)).call();
+        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.sha3(itemHash)).call();
         console.log('stage ', stage);
 
         let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
@@ -53,7 +53,7 @@ class Challenge extends Component {
                 let dataHash = that.state['dataHash'];
                 console.log('itemHash', itemHash);
                 console.log('dataHash', dataHash);         
-                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.toHex(itemHash),that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), dataHash).send();
                 that.setState({
                     'submiting': false
                 });

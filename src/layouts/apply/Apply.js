@@ -48,7 +48,7 @@ class Apply extends Component {
                 let dataHash = that.state['dataHash'];
                 console.log('itemHash', itemHash);
                 console.log('dataHash', dataHash);                                
-                that.BBUnOrderedTCRInstance.methods.apply(10, that.Utils.toWei(bboAmount, 'ether'),that.Utils.toHex(itemHash),that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.apply(10, that.Utils.toWei(bboAmount, 'ether'),that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });

@@ -53,7 +53,7 @@ class Challenge extends Component {
                 let dataHash = that.state['dataHash'];
                 console.log('itemHash', itemHash);
                 console.log('dataHash', dataHash);         
-                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), dataHash).send();
+                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });
@@ -65,6 +65,9 @@ class Challenge extends Component {
     }
 
     render() {
+        if(this.account != this.props.accounts[0]) {
+            this.account = this.props.accounts[0]
+        }
         return (
             <div className="container-fix-600">
             <h3 className = "newstype">You are about challenge to ITEM</h3>

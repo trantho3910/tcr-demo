@@ -5,6 +5,7 @@ import { drizzleConnect } from 'drizzle-react'
 import CurrencyFormat from 'react-currency-format';
 import Challenge from '../challenge/Challenge'
 import Apply from '../apply/Apply'
+import Voting from '../voting/Voting'
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -126,6 +127,7 @@ class ProgramInner extends Component {
 
            <Apply></Apply>
            <Challenge></Challenge>
+           <Voting></Voting>
 
 
         </div>

@@ -4,7 +4,7 @@ import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
 
 
-class Apply extends Component {
+class TCRUtil extends Component {
     constructor(props, context) {
       super(props)
       this.contracts = context.drizzle.contracts
@@ -19,8 +19,6 @@ class Apply extends Component {
     }
 
     async getParams () {
-       
-      
     }
 
     handleInputChange(event) {
@@ -93,18 +91,17 @@ class Apply extends Component {
         }
         return (
             <div className="container-fix-600">
-            <h3 className = "newstype">You are about apply to ITEM</h3>
-            <p>
-            <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" placeholder = "Amount BBO" onChange={this.handleInputChange} />
+            <h3 className = "newstype">TCR Update Status</h3>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Update Status</button>
             </p>
             <p>
             <input className="input-bbo" key="itemHash" type="text" name="itemHash" placeholder = "Item Hash" onChange={this.handleInputChange} />
             </p>
-            <p>
-            <input className="input-bbo" key="dataHash" type="text" name="dataHash" placeholder = "Data Hash" onChange={this.handleInputChange} />
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Init Exit</button>
             </p>
-            <p><button key="submit" className="sub-item-button" type="button" onClick={this.handleApply}>Apply</button>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Final Exit</button>
             </p>
+           
             
             <br/><br/>
           </div>
@@ -113,7 +110,7 @@ class Apply extends Component {
     
 }
 
-Apply.contextTypes = {
+TCRUtil.contextTypes = {
     drizzle: PropTypes.object
 }
 const mapStateToProps = state => {
@@ -123,4 +120,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(Apply, mapStateToProps)
+export default drizzleConnect(TCRUtil, mapStateToProps)

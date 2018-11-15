@@ -226,6 +226,11 @@ pre {
   color: #fff;
   width : 100px;
 }
+.item-button-submit{
+  background-color: #4dae4a;
+  color: #fff;
+  width : 230px;
+}
 .sub-item-button-submit{
   background-color: #4dae4a;
   color: #fff;

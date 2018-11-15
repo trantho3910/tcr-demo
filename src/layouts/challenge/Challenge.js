@@ -42,17 +42,41 @@ class Challenge extends Component {
         this.setState({
             'submiting': true
         });
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+        console.log('minStake',paramTCR.minStake);
+
         var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
         console.log('allowance',allowance);
 
+        let itemHash = that.state['itemHash'];
+        let dataHash = that.state['dataHash'];
+        console.log('itemHash', that.Utils.sha3(itemHash));
+        console.log('dataHash', dataHash);   
+
+        if(allowance >= paramTCR.minStake) {
+            that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
+            that.setState({
+                'submiting': false
+            });
+
+            this.BBUnOrderedTCRInstance.events
+                .Challenge({
+                    filter : {itemHash : that.Utils.sha3(itemHash)}
+
+                }, (error, event) => {})
+                .on('data', (event) => {
+                    console.log(event.returnValues);
+                })
+                .on('changed', (event) => console.log(event))
+                .on('error', (error) => console.log(error));
+
+                  return;
+                }
+
         this.BBOInstance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
         setTimeout(function () {
-            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000', 'ether')).send();
-            setTimeout(function () {
-                let itemHash = that.state['itemHash'];
-                let dataHash = that.state['dataHash'];
-                console.log('itemHash', itemHash);
-                console.log('dataHash', dataHash);         
+            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
+            setTimeout(function () {      
                 that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
                 that.setState({
                     'submiting': false
@@ -60,6 +84,8 @@ class Challenge extends Component {
 
             }, 5000);
         }, 5000);
+
+
 
 
     }

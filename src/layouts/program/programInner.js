@@ -6,6 +6,7 @@ import CurrencyFormat from 'react-currency-format';
 import Challenge from '../challenge/Challenge'
 import Apply from '../apply/Apply'
 import Voting from '../voting/Voting'
+import TCRUtil from '../tcrUtil/TCRUtil'
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -19,6 +20,7 @@ class ProgramInner extends Component {
     this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
     this.state = initialState;
     this.Utils = context.drizzle.web3.utils;
+    this.context = context;
 
     //console.log('this.bboHoldKey', this.Utils.hexToNumberString (this.bboHoldKey));
     // this.contracts['BBTCRHelper'].address =  '0xee6004216682e3e0eb7611fc234e13a967461f2b';
@@ -28,8 +30,14 @@ class ProgramInner extends Component {
     // console.log('this.paramTCR',this.paramTCR);
     //this.contracts['BBTCRHelper']['getListParamsUnOrdered'][this.paramTCR].value;
 
-    console.log( this.contracts.BBUnOrderedTCR.address);
+   
     
+  }
+
+  async getParams() {
+
+    let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+    this.context.paramTCR = paramTCR;
   }
   
  
@@ -80,6 +88,8 @@ class ProgramInner extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+
+
   render() {
     var bboBalance = 0;
     var bboHoldBalance = 0;
@@ -105,15 +115,15 @@ class ProgramInner extends Component {
 
      // console.log(this.props.contracts.BBTCRHelper['getListParamsUnOrdered']);
 
-      if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
-        //console.log('this.paramTCR ',this.paramTCR );
-        //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
-        //console.log('aaaaaaa',nnn);
+      // if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
+      //   //console.log('this.paramTCR ',this.paramTCR );
+      //   //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
+      //   //console.log('aaaaaaa',nnn);
 
-      }
+      // }
     }
     
-    
+   
     return (
       <main className="container">
         <div className="">
@@ -124,11 +134,10 @@ class ProgramInner extends Component {
             <br/><br/>
           </div>
           
-
            <Apply></Apply>
            <Challenge></Challenge>
            <Voting></Voting>
-
+           <TCRUtil></TCRUtil>
 
         </div>
       </main>

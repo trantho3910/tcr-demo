@@ -19,8 +19,6 @@ class Apply extends Component {
     }
 
     async getParams () {
-       
-      
     }
 
     handleInputChange(event) {

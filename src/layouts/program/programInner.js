@@ -7,6 +7,7 @@ import Challenge from '../challenge/Challenge'
 import Apply from '../apply/Apply'
 import Voting from '../voting/Voting'
 import TCRUtil from '../tcrUtil/TCRUtil'
+import OwnerTool from '../ownerTool/OwnerTool'
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -128,17 +129,14 @@ class ProgramInner extends Component {
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-            <h1 className = "newstype">Midas Foundation Long-term HODLING program <br/> for BBO Hodlers</h1>
-            
-
-            <br/><br/>
-          </div>
+          <h1 className = "newstype">TCR</h1>
           
+          </div>
            <Apply></Apply>
            <Challenge></Challenge>
            <Voting></Voting>
            <TCRUtil></TCRUtil>
-
+           <OwnerTool></OwnerTool> 
         </div>
       </main>
     )

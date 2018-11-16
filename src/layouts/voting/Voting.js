@@ -16,19 +16,32 @@ class Voting extends Component {
       this.handleGetPullID = this.handleGetPullID.bind(this);
       this.handleCommitVote = this.handleCommitVote.bind(this);
       this.handleGetPollStage = this.handleGetPollStage.bind(this);
+      this.claimReward = this.claimReward.bind(this);
       this.revealVote = this.revealVote.bind(this);
       var initialState = {bboAmount:0, submiting:false};
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
       this.BBOInstance = this.contracts.BBOTest;
       this.VotingInstance = this.contracts.BBVoting;
-      this.VotingHeplperInstance = this.contracts.BBVotingHelper;
-
-  
+      this.VotingHeplperInstance = this.contracts.BBVotingHelper;  
     }
 
     async handleGetPullID() {
         console.log('handleGetPullID');
+    }
+
+    async claimReward() {
+        if (this.state['submiting'])
+            return;
+        this.setState({
+            'submiting': true
+        });
+        let pollID = this.state['pollID'];
+
+        this.BBUnOrderedTCRInstance.methods.claimReward(pollID).send();
+        this.setState({
+            'submiting': false
+        });
     }
 
     async handleGetPollStage() {
@@ -43,7 +56,11 @@ class Voting extends Component {
         this.setState({
             'submiting': false
         });
-        console.log(result);
+        console.log(result[0]);
+        console.log(result[1]);
+        console.log(result[2]);
+        console.log(result[3]);
+        console.log(result[4]);
 
     }
 
@@ -201,10 +218,13 @@ class Voting extends Component {
             <p>
                 <button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleGetPollStage}>Get Poll Stage</button>
             </p>
-
+            
              <h3 className = "newstype">Stage : Reveal Vote</h3>
              <p>
                 <button key="submit" className="sub-item-button-submit" type="button" onClick={this.revealVote}>Reveal Vote</button>
+            </p>
+            <p>
+                <button key="submit" className="sub-item-button-submit" type="button" onClick={this.claimReward}>Claim Reward</button>
             </p>
         
           </div>

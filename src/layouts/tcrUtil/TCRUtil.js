@@ -9,81 +9,68 @@ class TCRUtil extends Component {
       super(props)
       this.contracts = context.drizzle.contracts
       this.Utils = context.drizzle.web3.utils;  
-      this.handleApply = this.handleApply.bind(this);
-      this.getParams = this.getParams.bind(this);
       this.handleInputChange = this.handleInputChange.bind(this);
+      this.updateStatus = this.updateStatus.bind(this);
+      this.updateInitExit = this.updateInitExit.bind(this);
+      this.finalizeExit = this.finalizeExit.bind(this);
       var initialState = {bboAmount:0, submiting:false};
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
       this.BBOInstance = this.contracts.BBOTest;
     }
 
-    async getParams () {
-    }
+    async updateStatus () {
 
-    handleInputChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
-
-    async handleApply() {
-
-        console.log('handleApply');
+        console.log('updateStatus');
         if (this.state['submiting'])
             return;
         var that = this;
         this.setState({
             'submiting': true
         });
-
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
-        console.log('minStake',paramTCR.minStake);
-        
-        var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
-        console.log('allowance',allowance);
-
-        let bboAmount = that.state['bboAmount'];
-        bboAmount = this.Utils.toWei(bboAmount, 'ether');
-        console.log('bboAmount',bboAmount);
-
         let itemHash = that.state['itemHash'];
-        let dataHash = that.state['dataHash'];
-
-        console.log('itemHash', itemHash);
-        console.log('dataHash', dataHash);   
-
-        if(allowance > paramTCR.minStake && bboAmount >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
-            that.setState({
-                'submiting': false
-            });
-            return;
-        }
-
-        if(bboAmount < paramTCR.minStake) {
-            alert('BBO Amount must be greater 100');
-            that.setState({
-                'submiting': false
-            });
-            return;
-        }
-        
-         
-        this.BBOInstance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
-        setTimeout(function () {
-            
-            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
-            setTimeout(function () {
-                                            
-                that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
-                that.setState({
-                    'submiting': false
-                });
-
-            }, 5000);
-        }, 5000);
-
-
+        that.BBUnOrderedTCRInstance.methods.updateStatus(10, that.Utils.sha3(itemHash)).send();
+        that.setState({
+            'submiting': false
+        });
     }
+
+    async updateInitExit() {
+        console.log('updateInitExit');
+        if (this.state['submiting'])
+            return;
+        var that = this;
+        this.setState({
+            'submiting': true
+        });
+        let itemHash = that.state['itemHash'];
+        that.BBUnOrderedTCRInstance.methods.initExit(10, that.Utils.sha3(itemHash)).send();
+        that.setState({
+            'submiting': false
+        });
+    }
+
+
+    async finalizeExit() {
+        console.log('finalizeExit');
+        if (this.state['submiting'])
+            return;
+        var that = this;
+        this.setState({
+            'submiting': true
+        });
+        let itemHash = that.state['itemHash'];
+        that.BBUnOrderedTCRInstance.methods.finalizeExit(10, that.Utils.sha3(itemHash)).send();
+        that.setState({
+            'submiting': false
+        });
+    }
+
+    handleInputChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+
+    
 
     render() {
         if(this.account != this.props.accounts[0]) {
@@ -92,14 +79,14 @@ class TCRUtil extends Component {
         return (
             <div className="container-fix-600">
             <h3 className = "newstype">TCR Update Status</h3>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Update Status</button>
-            </p>
             <p>
             <input className="input-bbo" key="itemHash" type="text" name="itemHash" placeholder = "Item Hash" onChange={this.handleInputChange} />
             </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Init Exit</button>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateStatus}>Update Status</button>
             </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleApply}>Final Exit</button>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateInitExit}>Init Exit</button>
+            </p>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.finalizeExit}>Finalize Exit</button>
             </p>
            
             

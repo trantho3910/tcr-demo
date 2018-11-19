@@ -6,7 +6,7 @@ import { drizzleConnect } from 'drizzle-react'
 
 class Apply extends Component {
     constructor(props, context) {
-      super(props)
+      super(props, context)
       this.contracts = context.drizzle.contracts
       this.Utils = context.drizzle.web3.utils;  
       this.handleApply = this.handleApply.bind(this);
@@ -45,8 +45,8 @@ class Apply extends Component {
         bboAmount = this.Utils.toWei(bboAmount, 'ether');
         console.log('bboAmount',bboAmount);
 
-        let itemHash = that.state['itemHash'];
-        let dataHash = that.state['dataHash'];
+        let itemHash = this.props.componentPros.itemHash
+        let dataHash = this.props.componentPros.extraData
 
         console.log('itemHash', itemHash);
         console.log('dataHash', dataHash);   
@@ -89,17 +89,15 @@ class Apply extends Component {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
+        if(!this.props.componentPros)
+            return ''
         return (
-            <div className="container-fix-600">
+            <div>
             <h3 className = "newstype">You are about apply to ITEM</h3>
+            <p>IPFS: {this.props.componentPros.extraData}</p>
+            <p>ItemHash: {this.props.componentPros.itemHash}</p>
             <p>
             <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" placeholder = "Amount BBO" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="itemHash" type="text" name="itemHash" placeholder = "Item Hash" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="dataHash" type="text" name="dataHash" placeholder = "Data Hash" onChange={this.handleInputChange} />
             </p>
             <p><button key="submit" className="sub-item-button" type="button" onClick={this.handleApply}>Apply</button>
             </p>

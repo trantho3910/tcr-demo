@@ -221,6 +221,21 @@ pre {
       background-color: #4dae4a;
       color: #fff;
 }
+.sub-item-button{
+  background-color: #4dae4a;
+  color: #fff;
+  width : 100px;
+}
+.item-button-submit{
+  background-color: #4dae4a;
+  color: #fff;
+  width : 230px;
+}
+.sub-item-button-submit{
+  background-color: #4dae4a;
+  color: #fff;
+  width : 150px;
+}
 .container-fix-600{
   width: 600px;
   margin: 0 auto;

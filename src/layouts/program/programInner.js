@@ -3,6 +3,11 @@ import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
 import CurrencyFormat from 'react-currency-format';
+import Challenge from '../challenge/Challenge'
+import Apply from '../apply/Apply'
+import Voting from '../voting/Voting'
+import TCRUtil from '../tcrUtil/TCRUtil'
+import OwnerTool from '../ownerTool/OwnerTool'
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -11,47 +16,32 @@ class ProgramInner extends Component {
     var initialState = {bboAmount:0, submiting:false};
     this.account = this.props.accounts[0];
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleInputApply = this.handleInputApply.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleApproveBBO = this.handleApproveBBO.bind(this);
     this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
     this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
     this.state = initialState;
     this.Utils = context.drizzle.web3.utils;
+    this.context = context;
 
     //console.log('this.bboHoldKey', this.Utils.hexToNumberString (this.bboHoldKey));
     // this.contracts['BBTCRHelper'].address =  '0xee6004216682e3e0eb7611fc234e13a967461f2b';
     // this.contracts['BBUnOrderedTCR'].address =  '0x9ec9bb2775c37730bbd7ed203fe3e8e73d6dfc23';
 
-    this.paramTCR =  this.contracts['BBTCRHelper'].methods['getListParamsUnOrdered'].cacheCall(this.Utils.toHex(10));
     //console.log('paramTCR', this.contracts['BBTCRHelper'].methods['owner'].cacheCall());
     // console.log('this.paramTCR',this.paramTCR);
     //this.contracts['BBTCRHelper']['getListParamsUnOrdered'][this.paramTCR].value;
 
-    console.log( this.contracts.BBUnOrderedTCR.address);
+   
     
   }
+
+  async getParams() {
+
+    let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+    this.context.paramTCR = paramTCR;
+  }
   
-  async handleInputApply () {
-    this.contracts.BBUnOrderedTCR.methods.apply(10, this.Utils.toWei('1100','ether'),this.Utils.toHex('aa'),this.Utils.toHex('bb')).send();
-  }
-
-  async handleApproveBBO() {
-    if(this.state['bboAmount']>0){
-      if(this.state['submiting'])
-        return;
-        var that = this;
-      this.setState({'submiting':true});
-      let otx = this.contracts.BBOTest.methods.approve(this.contracts.BBUnOrderedTCR.address, 0).send();
-          setTimeout(function(){
-            that.contracts.BBOTest.methods.approve(that.contracts.BBUnOrderedTCR.address,  that.context.drizzle.web3.utils.toWei(that.state['bboAmount'], 'ether')).send();
-          }, 5000);
-    } else{
-      alert('BBO Amount must be greater 0');
-    }
-
-  }
-
+ 
   async handleSubmit() {
     // check allowance
 
@@ -97,8 +87,9 @@ class ProgramInner extends Component {
 
   handleInputChange(event) {
     this.setState({ [event.target.name]: event.target.value });
-
   }
+
+
 
   render() {
     var bboBalance = 0;
@@ -125,60 +116,27 @@ class ProgramInner extends Component {
 
      // console.log(this.props.contracts.BBTCRHelper['getListParamsUnOrdered']);
 
-      if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
-        //console.log('this.paramTCR ',this.paramTCR );
-        //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
-        //console.log('aaaaaaa',nnn);
+      // if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
+      //   //console.log('this.paramTCR ',this.paramTCR );
+      //   //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
+      //   //console.log('aaaaaaa',nnn);
 
-      }
+      // }
     }
     
-    
+   
     return (
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-            <h1 className = "newstype">Midas Foundation Long-term HODLING program <br/> for BBO Hodlers</h1>
-            
-
-            <br/><br/>
-          </div>
+          <h1 className = "newstype">TCR</h1>
           
-        
-          <div className="container-fix-600">
-            <p><strong>Your Address:</strong> {`${this.props.accounts[0]}`}</p>
-            {/* <p><strong>BBO Balance</strong>: <span className="color-green"><CurrencyFormat displayType='text' decimalScale='2' value={bboBalance} thousandSeparator={true} prefix={''} /></span></p>
-            <p><strong>Current BBO in Holding contract</strong>: <span className="color-green"><CurrencyFormat displayType='text' decimalScale='2' value={bboHoldBalance} thousandSeparator={true} prefix={''} /></span></p>
-           */}
-             <h3 className = "newstype">Deposit BBO</h3>
-            <p>
-            <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="deposit-button" type="button" onClick={this.handleSubmit}>Deposit</button>
-            </p>
-            <br/><br/>
           </div>
-          <div className="container-fix-600">
-             <h3 className = "newstype">Approve BBO</h3>
-            <p>
-            <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="deposit-button" type="button" onClick={this.handleApproveBBO}>Approve</button>
-            </p>
-            <br/><br/>
-          </div>
-
-          <div className="container-fix-600">
-             <h3 className = "newstype">Apply TCR</h3>
-            <p>
-            </p>
-            <p><button key="submit" className="deposit-button" type="button" onClick={this.handleInputApply}>Apply</button>
-            </p>
-            <br/><br/>
-          </div>
-
-
-
+           <Apply></Apply>
+           <Challenge></Challenge>
+           <Voting></Voting>
+           <TCRUtil></TCRUtil>
+           <OwnerTool></OwnerTool> 
         </div>
       </main>
     )

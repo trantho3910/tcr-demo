@@ -7,6 +7,8 @@ const mapStateToProps = state => {
     accounts: state.accounts,
     BBOHoldingContract: state.contracts.BBOHoldingContract,
     BBTCRHelper: state.contracts.BBTCRHelper,
+    BBVotingHelper: state.contracts.BBVotingHelper,
+    BBVoting: state.contracts.BBVoting,
     BBUnOrderedTCR: state.contracts.BBUnOrderedTCR,
     BBOTest: state.contracts.BBOTest,
     drizzleStatus: state.drizzleStatus

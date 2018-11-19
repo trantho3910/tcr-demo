@@ -4,6 +4,9 @@ import BBTCRHelper from './../build/contracts/BBTCRHelper.json'
 import BBUnOrderedTCR from './../build/contracts/BBUnOrderedTCR.json'
 import BBVoting from './../build/contracts/BBVoting.json'
 import BBVotingHelper from './../build/contracts/BBVotingHelper.json'
+import BBExpertHash from './../build/contracts/BBExpertHash.json'
+
+
 
 
 
@@ -21,7 +24,8 @@ const drizzleOptions = {
     BBTCRHelper,
     BBUnOrderedTCR,
     BBVotingHelper,
-    BBVoting
+    BBVoting,
+    BBExpertHash
   ],
   events: {
     BBUnOrderedTCR : ['Challenge'],

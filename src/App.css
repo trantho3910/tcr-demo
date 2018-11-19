@@ -238,6 +238,8 @@ pre {
 }
 .container-fix-600{
   width: 600px;
-  margin: 0 auto;
   position: relative;
+}
+.rows{
+  width: 100%;
 }

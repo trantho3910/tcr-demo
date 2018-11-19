@@ -11,6 +11,7 @@ const mapStateToProps = state => {
     BBVoting: state.contracts.BBVoting,
     BBUnOrderedTCR: state.contracts.BBUnOrderedTCR,
     BBOTest: state.contracts.BBOTest,
+    BBExpertHash: state.contracts.BBExpertHash,
     drizzleStatus: state.drizzleStatus
   }
 }

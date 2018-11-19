@@ -8,6 +8,7 @@ import Apply from '../apply/Apply'
 import Voting from '../voting/Voting'
 import TCRUtil from '../tcrUtil/TCRUtil'
 import OwnerTool from '../ownerTool/OwnerTool'
+import RegisterItem from '../registerItem/RegisterItem'
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -132,6 +133,7 @@ class ProgramInner extends Component {
           <h1 className = "newstype">TCR</h1>
           
           </div>
+          <RegisterItem></RegisterItem>
            <Apply></Apply>
            <Challenge></Challenge>
            <Voting></Voting>

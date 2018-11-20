@@ -204,8 +204,9 @@ class UnorderTCRListing extends React.Component {
         let itemStatus = stage==1?'In Application':stage==2?'In Challenge':stage==3?'In Registry':'New'
         let isOwner = await this.contracts.BBUnOrderedTCR.methods.isOwnerItem(10, event.returnValues.itemHash).call();
 
+
         if(data) {
-          let obj = {name: data.fullName, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner};
+          let obj = {name: data.fullName, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
           this.items.push(obj);
           this.setState({rows: this.items})
         }
@@ -230,7 +231,7 @@ class UnorderTCRListing extends React.Component {
   };
 
   displayUpdateButton = (item) => {
-    let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner}
+    let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner, stage : item.stage}
     let btnColor = "primary"
     if(componentPros.isOwner) {
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>

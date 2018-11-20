@@ -22,9 +22,9 @@ import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
 import { resolve } from 'path';
 import { rejects } from 'assert';
+import Voting from '../voting/Voting';
 const IPFS = require('ipfs-mini');
 const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
-import Voting from '../voting/Voting'
 
 
 class SimpleDialog extends React.Component {

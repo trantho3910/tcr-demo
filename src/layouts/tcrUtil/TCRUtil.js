@@ -85,6 +85,9 @@ class TCRUtil extends Component {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
+
+        
+
         return (
             <div className="container-fix-600">
              <h3 className = "newstype">You are about manager to ITEM</h3>

@@ -19,8 +19,8 @@ class ProgramInner extends Component {
     this.account = this.props.accounts[0];
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
-    this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
+    // this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
+    // this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
     this.state = initialState;
     this.Utils = context.drizzle.web3.utils;
     this.context = context;
@@ -96,35 +96,35 @@ class ProgramInner extends Component {
   render() {
     var bboBalance = 0;
     var bboHoldBalance = 0;
-    if(this.account != this.props.accounts[0]){
-      this.account = this.props.accounts[0]
-      this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
-      this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
-      this.paramTCR =  this.contracts['BBTCRHelper'].methods['getListParamsUnOrdered'].cacheCall(this.Utils.toHex(10));
+    // if(this.account != this.props.accounts[0]){
+    //   this.account = this.props.accounts[0]
+    //   this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
+    //   this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
+    //   this.paramTCR =  this.contracts['BBTCRHelper'].methods['getListParamsUnOrdered'].cacheCall(this.Utils.toHex(10));
 
-    }else{
-      if(this.bboBalanceKey in this.props.contracts['BBOTest']['balanceOf']) {
-        bboBalance = this.props.contracts['BBOTest']['balanceOf'][this.bboBalanceKey].value;
-        bboBalance = this.context.drizzle.web3.utils.fromWei(bboBalance,'ether');
-      }
-      if(this.bboHoldKey in this.props.contracts.BBOHoldingContract['holdBalance']) {
-        bboHoldBalance = this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey].value;
-        //console.log('this.bboHoldKey',this.bboHoldKey);
+    // }else{
+    //   if(this.bboBalanceKey in this.props.contracts['BBOTest']['balanceOf']) {
+    //     bboBalance = this.props.contracts['BBOTest']['balanceOf'][this.bboBalanceKey].value;
+    //     bboBalance = this.context.drizzle.web3.utils.fromWei(bboBalance,'ether');
+    //   }
+    //   if(this.bboHoldKey in this.props.contracts.BBOHoldingContract['holdBalance']) {
+    //     bboHoldBalance = this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey].value;
+    //     //console.log('this.bboHoldKey',this.bboHoldKey);
 
-        //console.log('bboHoldBalance',this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey]);
+    //     //console.log('bboHoldBalance',this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey]);
 
-        bboHoldBalance = this.context.drizzle.web3.utils.fromWei(bboHoldBalance,'ether');
-      }
+    //     bboHoldBalance = this.context.drizzle.web3.utils.fromWei(bboHoldBalance,'ether');
+    //   }
 
-     // console.log(this.props.contracts.BBTCRHelper['getListParamsUnOrdered']);
+    //  // console.log(this.props.contracts.BBTCRHelper['getListParamsUnOrdered']);
 
-      // if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
-      //   //console.log('this.paramTCR ',this.paramTCR );
-      //   //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
-      //   //console.log('aaaaaaa',nnn);
+    //   // if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
+    //   //   //console.log('this.paramTCR ',this.paramTCR );
+    //   //   //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
+    //   //   //console.log('aaaaaaa',nnn);
 
-      // }
-    }
+    //   // }
+    // }
     
    
     return (
@@ -136,8 +136,7 @@ class ProgramInner extends Component {
           </div>
           <UnorderTCRListing></UnorderTCRListing>
           <RegisterItem></RegisterItem>
-           <Challenge></Challenge>
-           <Voting></Voting>
+          
            <TCRUtil></TCRUtil>
            <OwnerTool></OwnerTool> 
         </div>

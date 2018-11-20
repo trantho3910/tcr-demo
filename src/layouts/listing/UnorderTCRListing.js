@@ -24,6 +24,7 @@ import { resolve } from 'path';
 import { rejects } from 'assert';
 const IPFS = require('ipfs-mini');
 const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+import Voting from '../voting/Voting'
 
 
 class SimpleDialog extends React.Component {
@@ -171,6 +172,7 @@ class UnorderTCRListing extends React.Component {
     this.Utils = context.drizzle.web3.utils; 
     this.count = 0; 
 
+
   }
 
     getDataIPFS = async (ipfsHash) => {
@@ -237,9 +239,13 @@ class UnorderTCRListing extends React.Component {
       dialogcomponent = Challenge
       dialogtitle = 'Challenge'
     }
+    if(componentPros.status == 'Voting'){
+      dialogcomponent = Voting
+      dialogtitle = 'Voting'
+    }
 
-
-  	return (<Button onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="contained" color="primary">
+    let btnColor = "primary"
+  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
         {item.status}
       </Button>
       )

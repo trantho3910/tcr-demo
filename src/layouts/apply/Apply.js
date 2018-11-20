@@ -2,7 +2,18 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
 
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+
+});
 
 class Apply extends Component {
     constructor(props, context) {
@@ -11,7 +22,7 @@ class Apply extends Component {
       this.Utils = context.drizzle.web3.utils;  
       this.handleApply = this.handleApply.bind(this);
       this.getParams = this.getParams.bind(this);
-      this.handleInputChange = this.handleInputChange.bind(this);
+      this.handleChange = this.handleChange.bind(this);
       var initialState = {bboAmount:0, submiting:false};
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
@@ -21,10 +32,12 @@ class Apply extends Component {
     async getParams () {
     }
 
-    handleInputChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
-
+  
+    handleChange = name => event => {
+        this.setState({
+          [name]: event.target.value,
+        });
+      };
     async handleApply() {
 
         console.log('handleApply');
@@ -52,7 +65,7 @@ class Apply extends Component {
         console.log('dataHash', dataHash);   
 
         if(allowance > paramTCR.minStake && bboAmount >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
+            that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
             });
@@ -74,18 +87,19 @@ class Apply extends Component {
             that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
             setTimeout(function () {
                                             
-                that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });
 
-            }, 5000);
+            }, 10000);
         }, 5000);
 
 
     }
 
     render() {
+        const { classes } = this.props;
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
@@ -96,12 +110,22 @@ class Apply extends Component {
             <h3 className = "newstype">You are about apply to ITEM</h3>
             <p>IPFS: {this.props.componentPros.extraData}</p>
             <p>ItemHash: {this.props.componentPros.itemHash}</p>
-            <p>
-            <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" placeholder = "Amount BBO" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="sub-item-button" type="button" onClick={this.handleApply}>Apply</button>
-            </p>
+            <TextField
+              label="Stake BBO Amount"
+              value={this.state.bboAmount}
+              onChange={this.handleChange('bboAmount')}
+              type="number"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              margin="normal"
+              variant="outlined"
+            />
             
+            <p>
+            <Button variant="contained" size="small" color="primary" onClick={this.handleApply}>Apply</Button>
+            </p>
             <br/><br/>
           </div>
         );
@@ -112,6 +136,9 @@ class Apply extends Component {
 Apply.contextTypes = {
     drizzle: PropTypes.object
 }
+Apply.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 const mapStateToProps = state => {
     return {
       accounts: state.accounts,
@@ -119,4 +146,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(Apply, mapStateToProps)
+export default withStyles(styles)(drizzleConnect(Apply, mapStateToProps))

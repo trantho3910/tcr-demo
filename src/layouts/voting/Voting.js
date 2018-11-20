@@ -2,30 +2,60 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
+
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+
+});
 
 class Voting extends Component {
     constructor(props, context) {
       super(props)
       this.contracts = context.drizzle.contracts
       this.Utils = context.drizzle.web3.utils;  
-      this.handleChallenge = this.handleChallenge.bind(this);
-      this.handleInputChange = this.handleInputChange.bind(this);
-      this.handleVotingRight = this.handleVotingRight.bind(this);
-      this.handleGetStage = this.handleGetStage.bind(this);
       this.handleGetPullID = this.handleGetPullID.bind(this);
       this.handleCommitVote = this.handleCommitVote.bind(this);
       this.handleGetPollStage = this.handleGetPollStage.bind(this);
       this.claimReward = this.claimReward.bind(this);
-      this.revealVote = this.revealVote.bind(this);
+      this.handeRevealVote = this.handeRevealVote.bind(this);
       var initialState = {bboAmount:0, submiting:false};
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
       this.BBOInstance = this.contracts.BBOTest;
       this.VotingInstance = this.contracts.BBVoting;
-      this.VotingHeplperInstance = this.contracts.BBVotingHelper;  
+      this.VotingHeplperInstance = this.contracts.BBVotingHelper; 
+      this.web3 = context.drizzle.web3;
     }
-
+    getPollID(){
+      const BBUnOrderedTCRInstanceWeb3 = new this.web3.eth.Contract(this.BBUnOrderedTCRInstance.abi, this.BBUnOrderedTCRInstance.address);
+      let that = this;
+      return BBUnOrderedTCRInstanceWeb3.getPastEvents('Challenge', 
+                {filter:{listID:10, itemHash: that.props.componentPros.itemHash},
+                 fromBlock:4464719,
+                 toBlock: 'latest' }, function(events, err){}
+                 ).then(function(events){
+                    console.log(events)
+                    if(events.length>0)
+                    that.setState({pollID: events[0].returnValues.pollID});
+                 });
+    }
+    async getReward(){
+      let reward = this.BBUnOrderedTCRInstance.methods.voterReward(this.props.accounts[0], this.state.pollID).send();
+      if(reward!= this.state.voterReward)
+        this.setState({voterReward:reward});
+    }
     async handleGetPullID() {
         console.log('handleGetPullID');
     }
@@ -54,17 +84,14 @@ class Voting extends Component {
 
         let result =  await this.VotingHeplperInstance.methods.getPollStage(pollID).call();
         this.setState({
-            'submiting': false
+            'submiting': false,
+            'pollStatus':result[0],
+            'commitEndate': result[3],
+            'revealEndate': result[4],
         });
-        console.log(result[0]);
-        console.log(result[1]);
-        console.log(result[2]);
-        console.log(result[3]);
-        console.log(result[4]);
-
     }
 
-    async revealVote() {
+    async handeRevealVote() {
         if (this.state['submiting'])
             return;
         this.setState({
@@ -106,127 +133,176 @@ class Voting extends Component {
     }
 
 
-    async handleVotingRight() {
-        if (this.state['submiting'])
-        return;
-        var that = this;
+    
+    handleChange = key => (event, value) => {
         this.setState({
-            'submiting': true
+          [key]: value,
         });
-        var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.VotingInstance.address).call();
-        let bboAmount = that.state['bboAmount'];
-        bboAmount = this.Utils.toWei(bboAmount, 'ether');
+      };
 
-        if(bboAmount <= allowance) {
-            that.VotingInstance.methods.requestVotingRights(bboAmount).send();
-            that.setState({
-                'submiting': false
-            });
-            return;
+    handleDownload() {
+        alert('TODO here! Not implement yet!!! Please come back later');
+    }
+
+
+    displayTime(time){
+        if(time>0){
+         return new Date(time*1000).toISOString()
+        }else{
+            return new Date().toISOString()
         }
-
-        this.BBOInstance.methods.approve(this.VotingInstance.address, 0).send();
-        setTimeout(function () {
-            that.BBOInstance.methods.approve(that.VotingInstance.address, that.Utils.toWei('1000000', 'ether')).send();
-            setTimeout(function () {      
-                that.VotingInstance.methods.requestVotingRights(bboAmount).send();
-                that.setState({
-                    'submiting': false
-                });
-
-            }, 5000);
-        }, 5000);
-
     }
-
-    handleInputChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
+    displayForm(){
+        let now = new Date();
+        if(this.state.commitEndate && this.state.revealEndate){
+            if(now < this.state.commitEndate){
+                if(this.state.votingState != 'Commit Vote')
+                    this.setState({votingState: 'Commit Vote'})
+                return this.displayCommit()
+            }
+            if(this.state.commitEndate < now < this.state.revealEndate){
+                if(this.state.votingState != 'Reveal Vote')
+                    this.setState({votingState: 'Reveal Vote'})
+                return this.displayReveal()
+            }
+            else{
+                if(this.state.votingState != 'Finished Vote')
+                    this.setState({votingState: 'Finished Vote'})
+                return this.displayReward()
+            }
+        }else{
+            return 'Loading...'
+        }
     }
-
-    async handleGetStage() {
-        let itemHash = this.state['itemHash'];
-        console.log('itemHash ',itemHash);
-        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.sha3(itemHash)).call();
-        console.log('stage ', stage);
-
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
-        console.log('minStake',paramTCR);
-
+    displayReward(){
+         const { classes } = this.props;
+         this.getReward();
+        return(
+            <div>
+            <h3>Your Reward: {this.state.voterReward}</h3>
+            
+            <Button variant="contained" size="small" 
+             color="primary"
+              onClick={this.claimReward}>Claim Reward</Button>
+            </div>
+        )
     }
-
-    async handleChallenge() {
-        console.log('handleChallenge');
-        if (this.state['submiting'])
-            return;
-        var that = this;
-        this.setState({
-            'submiting': true
-        });
-        var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
-        console.log('allowance',allowance);
-
-        this.BBOInstance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
-        setTimeout(function () {
-            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000', 'ether')).send();
-            setTimeout(function () {
-                let itemHash = that.state['itemHash'];
-                let dataHash = that.state['dataHash'];
-                console.log('itemHash', itemHash);
-                console.log('dataHash', dataHash);         
-                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
-                that.setState({
-                    'submiting': false
-                });
-
-            }, 5000);
-        }, 5000);
-
-
+    displayReveal(){
+        const { classes } = this.props;
+        return(
+            <div>
+            <h3>Select your choice to reveal this vote</h3>
+            <FormControl component="fieldset">
+              <FormLabel>Support or Not</FormLabel>
+              <RadioGroup
+                row
+                name="icon"
+                aria-label="icon"
+                value={this.state.choice}
+                onChange={this.handleChange('choice')}
+              >
+                <FormControlLabel value="1" control={<Radio />} label="Support" />
+                <FormControlLabel value="0" control={<Radio />} label="Not" />
+                <TextField
+              label="Encrypt Password"
+              value={this.state.salt}
+              onChange={this.handleChange('salt')}
+              type="number"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              margin="normal"
+              variant="outlined"
+            />
+              </RadioGroup>
+            </FormControl>
+            <br/>
+             <Button variant="contained" size="small" 
+             color=""
+              onClick={this.handleDownload}>Upload Encrypt File</Button>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <Button variant="contained" size="small" 
+             color="primary"
+              onClick={this.handeRevealVote}>Reveal Vote</Button>
+            </div>
+        )
     }
-
+    displayCommit(){
+        const { classes } = this.props;
+        return(
+            <div>
+            <FormControl component="fieldset">
+              <FormLabel>Support or Not</FormLabel>
+              <RadioGroup
+                row
+                name="icon"
+                aria-label="icon"
+                value={this.state.choice}
+                onChange={this.handleChange('choice')}
+              >
+                <FormControlLabel value="1" control={<Radio />} label="Support" />
+                <FormControlLabel value="0" control={<Radio />} label="Not" />
+                <TextField
+              label="Encrypt Password"
+              value={this.state.salt}
+              onChange={this.handleChange('salt')}
+              type="number"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              margin="normal"
+              variant="outlined"
+            />
+              </RadioGroup>
+            </FormControl>
+            <br/>
+            <TextField
+              label="Vote Amount"
+              value={this.state.bboAmountVote}
+              onChange={this.handleChange('bboAmountVote')}
+              type="number"
+              className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            <br/>
+             <Button variant="contained" size="small" 
+             color=""
+              onClick={this.handleDownload}>Download</Button>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <Button variant="contained" size="small" 
+             color="primary"
+              onClick={this.handleCommitVote}>Commit Vote</Button>
+            </div>
+        )
+    }
     render() {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
+        if(this.props.componentPros && !this.state.pollID){
+            this.getPollID();
+        }
+        if(!this.state.pollStatus && this.state.pollID){
+            this.handleGetPollStage();
+        }
         return (
-            <div className="container-fix-600">
-            <h3 className = "newstype">Stage : Voting</h3>
-           
-            <p>
-            <input className="input-bbo" key="bboAmount" type="number" name="bboAmount" placeholder = "Amount BBO" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="item-button-submit" type="button" onClick={this.handleVotingRight}>Request VotingRight</button>
-            </p>
-            <p>
-            <input className="input-bbo" key="pollID" type="number" name="pollID" placeholder = "Poll ID" onChange={this.handleInputChange} />
-            </p>
-             <p>
-            <input className="input-bbo" key="choice" type="number" name="choice" placeholder = "Choice" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="salt" type="text" name="salt" placeholder = "Salt" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="bboAmountVote" type="number" name="bboAmountVote" placeholder = "Amount BBO" onChange={this.handleInputChange} />
-            </p>
-            <p>
-                <button key="submit" className="item-button-submit" type="button" onClick={this.handleGetStage}>Download Commit</button>
-            </p>
-            <p>
-                <button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleCommitVote}>Submit Vote</button>
-            </p>
-            <p>
-                <button key="submit" className="sub-item-button-submit" type="button" onClick={this.handleGetPollStage}>Get Poll Stage</button>
-            </p>
-            
-             <h3 className = "newstype">Stage : Reveal Vote</h3>
-             <p>
-                <button key="submit" className="sub-item-button-submit" type="button" onClick={this.revealVote}>Reveal Vote</button>
-            </p>
-            <p>
-                <button key="submit" className="sub-item-button-submit" type="button" onClick={this.claimReward}>Claim Reward</button>
-            </p>
-        
+            <div>
+            <h3 className = "newstype">Stage : {this.state.votingState}</h3>
+            <p>Item Hash: {this.props.componentPros.itemHash} </p>
+            <p>Poll ID: {this.state.pollID} </p>
+            <p>Now: {this.displayTime(0)} </p>
+            <p>Commit Enddate: {this.displayTime(this.state.commitEndate)} </p>
+            <p>Reveal Enddate: {this.displayTime(this.state.revealEndate)} </p>
+
+            {this.displayForm()}
+
           </div>
         );
     }
@@ -236,6 +312,9 @@ class Voting extends Component {
 Voting.contextTypes = {
     drizzle: PropTypes.object
 }
+Voting.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 const mapStateToProps = state => {
     return {
       accounts: state.accounts,
@@ -243,4 +322,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(Voting, mapStateToProps)
+export default withStyles(styles)(drizzleConnect(Voting, mapStateToProps))

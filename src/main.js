@@ -13,9 +13,6 @@ export default () => (
         <Navigation />
         <Switch>
             <Route exact path="/" component={ProgramContainer} />  
-            <Route exact path="/join" component={Join} />
-            <Route exact path="/metamask" component={ProgramContainer} />
-            <Route exact path="/program" component={ProgramContainer} />
             <Route path='/pages/:page' component={Introduce}/>
         </Switch>
         </React.Fragment>

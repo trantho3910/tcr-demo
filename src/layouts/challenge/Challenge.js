@@ -2,7 +2,17 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+const styles = theme => ({
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
 
+});
 
 class Challenge extends Component {
     constructor(props, context) {
@@ -11,7 +21,6 @@ class Challenge extends Component {
       this.Utils = context.drizzle.web3.utils;  
       this.handleChallenge = this.handleChallenge.bind(this);
       this.handleInputChange = this.handleInputChange.bind(this);
-      this.handleGetStage = this.handleGetStage.bind(this);
       var initialState = {bboAmount:0, submiting:false};
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
@@ -23,16 +32,16 @@ class Challenge extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    async handleGetStage() {
-        let itemHash = this.state['itemHash'];
-        console.log('itemHash ',itemHash);
-        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.sha3(itemHash)).call();
-        console.log('stage ', stage);
+    // async handleGetStage() {
+    //     let itemHash = this.props.componentPros.itemHash
+    //     console.log('itemHash ',itemHash);
+    //     let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.sha3(itemHash)).call();
+    //     console.log('stage ', stage);
 
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
-        console.log('minStake',paramTCR);
+    //     let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+    //     console.log('minStake',paramTCR);
 
-    }
+    // }
 
     async handleChallenge() {
         console.log('handleChallenge');
@@ -48,20 +57,22 @@ class Challenge extends Component {
         var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
         console.log('allowance',allowance);
 
-        let itemHash = that.state['itemHash'];
-        let dataHash = that.state['dataHash'];
-        console.log('itemHash', that.Utils.sha3(itemHash));
+        
+        let itemHash = this.props.componentPros.itemHash
+        let dataHash = this.props.componentPros.extraData
+
+        console.log('itemHash', itemHash);
         console.log('dataHash', dataHash);   
 
         if(allowance >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
+            that.BBUnOrderedTCRInstance.methods.challenge(10, itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
             });
 
             this.BBUnOrderedTCRInstance.events
                 .Challenge({
-                    filter : {itemHash : that.Utils.sha3(itemHash)}
+                    filter : {itemHash : itemHash}
 
                 }, (error, event) => {})
                 .on('data', (event) => {
@@ -77,12 +88,12 @@ class Challenge extends Component {
         setTimeout(function () {
             that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
             setTimeout(function () {      
-                that.BBUnOrderedTCRInstance.methods.challenge(10, that.Utils.sha3(itemHash), that.Utils.sha3(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.challenge(10, itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });
 
-            }, 5000);
+            }, 10000);
         }, 5000);
 
 
@@ -94,21 +105,15 @@ class Challenge extends Component {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
+        if(!this.props.componentPros)
+            return ''
         return (
             <div className="container-fix-600">
             <h3 className = "newstype">You are about challenge to ITEM</h3>
-             <p>
-            <input className="input-bbo" key="itemHash" type="text" name="itemHash" placeholder = "Item Hash" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="dataHash" type="text" name="dataHash" placeholder = "Data Hash" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="sub-item-button" type="button" onClick={this.handleChallenge}>Challenge</button>
-            </p>
-            <p>
-                <button key="submit" className="sub-item-button" type="button" onClick={this.handleGetStage}>Get Stage</button>
-            </p>
-        
+            <p>ItemHash: {this.props.componentPros.itemHash}</p>
+            <div>
+            <Button variant="contained" size="small" color="primary" onClick={this.handleChallenge}>Challenge</Button>
+            </div>
           </div>
         );
     }
@@ -118,6 +123,9 @@ class Challenge extends Component {
 Challenge.contextTypes = {
     drizzle: PropTypes.object
 }
+Challenge.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 const mapStateToProps = state => {
     return {
       accounts: state.accounts,
@@ -125,4 +133,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(Challenge, mapStateToProps)
+export default withStyles(styles)(drizzleConnect(Challenge, mapStateToProps))

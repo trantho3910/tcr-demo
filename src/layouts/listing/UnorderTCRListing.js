@@ -20,6 +20,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
+import Voting from '../voting/Voting'
+
 
 class SimpleDialog extends React.Component {
   handleClose = () => {
@@ -154,7 +156,7 @@ const styles = theme => ({
 class UnorderTCRListing extends React.Component {
   constructor(props, context) {
     super(props)
-    this.items = [{name:'a',status: 'Apply', created: 1542605000}, {name:'b',status: 'Challenge', created: 1542605105}, {name:'c',status: 'In ...', created: 1542605005}]
+  this.items = [{name:'cc',status: 'Voting', created: 1542605000}, {name:'cc',status: 'Apply', created: 1542605105}, {name:'cc',status: 'Challenge', created: 1542605005}]
  	this.state = {
 	    rows: [],
 	    page: 0,
@@ -195,9 +197,13 @@ class UnorderTCRListing extends React.Component {
       dialogcomponent = Challenge
       dialogtitle = 'Challenge'
     }
+    if(componentPros.status == 'Voting'){
+      dialogcomponent = Voting
+      dialogtitle = 'Voting'
+    }
 
-
-  	return (<Button onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="contained" color="primary">
+    let btnColor = "primary"
+  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
         {item.status}
       </Button>
       )

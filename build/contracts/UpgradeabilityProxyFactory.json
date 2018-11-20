@@ -2465,10 +2465,10 @@
         }
       },
       "links": {},
-      "address": "0x6cc4f14bae94f0d911673a2aef1050cb5a38dc21",
-      "transactionHash": "0xd9e960c7b62775d974944199f7ec42bd32c0ddbc7296933189cec112472ddd80"
+      "address": "0x6b40fb19a854cee4b8863fff28b7e67adecc9f70",
+      "transactionHash": "0xbe03da8ca594b571250d020b98d2b3a4c1c59d9a24b59bbc2f417f63f03ef8dc"
     }
   },
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-11-19T06:49:12.436Z"
+  "updatedAt": "2018-11-20T01:49:22.619Z"
 }

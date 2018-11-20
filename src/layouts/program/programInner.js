@@ -144,22 +144,56 @@ class ProgramInner extends Component {
   onModalClose = ()=> {
     this.setState({open:false})
   }
+  componentDidMount(){
+    let that = this;
+     this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call().then(function(rs){
+        console.log(rs)
+        that.setState({listParams: rs});
 
+      });
+  }
+  displayParams =() => {
+    if(this.state.listParams){
+       if(this.props.accounts[0] == '0x83e5353fc26643c29b041a3b692c6335c97a9aed')
+        return(
+          <div>
+          <h3>Params</h3>
+           <p>Application Duration: {this.state.listParams.applicationDuration} (s)</p>
+          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
+          <p>Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
+          <p>Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
+          <p>Set Prams TCR</p>
+              <Button size="small" onClick={this.handleClickOpen.bind(this, {}, OwnerTool, 'Set TCR Params only Owner')} color = "primary" variant="outlined">Update Params</Button>
+          </div>
+        )
+      else
+        return (
+          <div>
+          <h3>Params</h3>
+          <p>Application Duration: {this.state.listParams.applicationDuration} (s)</p>
+          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
+          <p>Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
+          <p>Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
+          </div>
+          )
+    }
+    else
+      return 'Loading...'
+  }
   render() {
   
     return (
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-          <h1 className = "newstype">TCR</h1>
-          
+          <h1 className = "newstype">Bigbom Ads Expert List</h1>
           </div>
+          <h3>Become an expert &nbsp;&nbsp;&nbsp;&nbsp;
+          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
+          </h3>
           <UnorderTCRListing></UnorderTCRListing>
           <br></br>
-          <p>Click to Register Item</p>
-          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
-          <p>Set Prams TCR</p>
-          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, OwnerTool, 'Set TCR Params only Owner')} color = "primary" variant="outlined">Update Params</Button>
+          {this.displayParams()}
           <SimpleDialogWrapped 
          open={this.state.open} 
          component={this.state.dialogcomponent}

@@ -29,8 +29,9 @@ class TCRUtil extends Component {
       this.state = initialState;
       this.BBUnOrderedTCRInstance = this.contracts.BBUnOrderedTCR;
       this.BBOInstance = this.contracts.BBOTest;
-    }
 
+    }
+   
     async updateStatus () {
 
         console.log('updateStatus');

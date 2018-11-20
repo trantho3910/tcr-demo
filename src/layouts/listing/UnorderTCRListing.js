@@ -7,6 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import TableHead from '@material-ui/core/TableHead';
 import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import FirstPageIcon from '@material-ui/icons/FirstPage';
@@ -206,7 +207,7 @@ class UnorderTCRListing extends React.Component {
 
 
         if(data) {
-          let obj = {name: data.fullName, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
+          let obj = {name: data.fullName, address:data.address, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
           this.items.push(obj);
           this.setState({rows: this.items})
         }
@@ -215,7 +216,8 @@ class UnorderTCRListing extends React.Component {
         // remove event from local database
     })
     .on('error', console.error);
-    console.log('todo here to get status from block change and enable button')//
+
+   
   }
   
   handleChangePage = (event, page) => {
@@ -229,7 +231,13 @@ class UnorderTCRListing extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
-
+  displayTime(time){
+      if(time>0){
+       return new Date(time*1000).toISOString()
+      }else{
+          return new Date().toISOString()
+      }
+  }
   displayUpdateButton = (item) => {
     let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner, stage : item.stage}
     let btnColor = "primary"
@@ -246,6 +254,7 @@ class UnorderTCRListing extends React.Component {
 
     var dialogcomponent = ''
     var dialogtitle = ''
+    var btnColor = "primary"
     if(componentPros.status == 'New'){
       dialogcomponent = Apply
       dialogtitle = 'Apply'
@@ -253,13 +262,15 @@ class UnorderTCRListing extends React.Component {
     if(componentPros.status == 'In Application' || componentPros.status == 'In Registry'){
       dialogcomponent = Challenge
       dialogtitle = 'Challenge'
+      btnColor = "secondary"
     }
     if(componentPros.status == 'In Challenge'){
       dialogcomponent = Voting
       dialogtitle = 'Voting'
+      btnColor = ""
     }
 
-    let btnColor = "secondary"
+    
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
         {dialogtitle}
       </Button>
@@ -278,17 +289,26 @@ class UnorderTCRListing extends React.Component {
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
           <Table className={classes.table}>
+            <TableHead>
+            <TableRow>
+              <TableCell>Ads Expert</TableCell>
+              <TableCell>Created</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
                   <TableRow key={row.itemHash}>
                     <TableCell component="th" scope="row">
-                      {row.name} -- {row.itemHash}
+                      Name: <b>{row.name}</b> <br/>
+                      Email: <b>{row.email}</b><br/>
+                      Address:<b>{row.address}</b>
                     </TableCell>
-                    <TableCell>{row.created}</TableCell>
+                    <TableCell>{this.displayTime(row.created)}</TableCell>
                     <TableCell>{row.status}</TableCell>
-                    <TableCell>{this.displayUpdateButton(row)}</TableCell>
-                    <TableCell>{this.displayActionButton(row)}</TableCell>
+                    <TableCell>{this.displayUpdateButton(row)} {this.displayActionButton(row)}</TableCell>
                   </TableRow>
                 );
               })}

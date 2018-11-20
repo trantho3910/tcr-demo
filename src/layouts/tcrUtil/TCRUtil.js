@@ -2,6 +2,18 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+    textField: {
+      marginLeft: theme.spacing.unit,
+      marginRight: theme.spacing.unit,
+    },
+  
+  });
+
 
 
 class TCRUtil extends Component {
@@ -28,8 +40,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        let itemHash = that.state['itemHash'];
-        that.BBUnOrderedTCRInstance.methods.updateStatus(10, that.Utils.sha3(itemHash)).send();
+        that.BBUnOrderedTCRInstance.methods.updateStatus(10, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });
@@ -43,8 +54,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        let itemHash = that.state['itemHash'];
-        that.BBUnOrderedTCRInstance.methods.initExit(10, that.Utils.sha3(itemHash)).send();
+        that.BBUnOrderedTCRInstance.methods.initExit(10, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });
@@ -59,8 +69,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        let itemHash = that.state['itemHash'];
-        that.BBUnOrderedTCRInstance.methods.finalizeExit(10, that.Utils.sha3(itemHash)).send();
+        that.BBUnOrderedTCRInstance.methods.finalizeExit(10, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });
@@ -76,17 +85,19 @@ class TCRUtil extends Component {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
+
+        
+
         return (
             <div className="container-fix-600">
-            <h3 className = "newstype">TCR Update Status</h3>
-            <p>
-            <input className="input-bbo" key="itemHash" type="text" name="itemHash" placeholder = "Item Hash" onChange={this.handleInputChange} />
+             <h3 className = "newstype">You are about manager to ITEM</h3>
+            <p>IPFS: {this.props.componentPros.extraData}</p>
+            <p>ItemHash: {this.props.componentPros.itemHash}</p>
+            <p><Button variant="outlined" color="secondary"  onClick={this.updateStatus}>Update Status</Button>
             </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateStatus}>Update Status</button>
+            <p><Button variant="outlined" color="secondary" onClick={this.updateInitExit}>Init Exit</Button>
             </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateInitExit}>Init Exit</button>
-            </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.finalizeExit}>Finalize Exit</button>
+            <p><Button  variant="outlined" color="secondary" onClick={this.finalizeExit}>Finalize Exit</Button>
             </p>
            
             
@@ -107,4 +118,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(TCRUtil, mapStateToProps)
+export default withStyles(styles)(drizzleConnect(TCRUtil, mapStateToProps))

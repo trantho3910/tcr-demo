@@ -142,7 +142,7 @@ pre {
 }
 
 .input-bbo {
-  width: 380px;
+  width: 520px;
 }
 .btn-switch {
   margin : 10px!;
@@ -205,7 +205,6 @@ pre {
 }
 .input-bbo{
    display: block;
-    width: 100%;
     padding: .375rem .75rem;
     font-size: 1rem;
     line-height: 1.5;
@@ -237,7 +236,7 @@ pre {
   width : 150px;
 }
 .container-fix-600{
-  width: 600px;
+  width: 650px;
   position: relative;
 }
 .rows{

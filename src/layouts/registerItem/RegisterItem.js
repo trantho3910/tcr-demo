@@ -45,7 +45,7 @@ class RegisterItem extends Component {
                 });
             } else {
                 console.log('https://gateway.ipfs.io/ipfs/' + result)
-                that.BBExpertHash.methods.pushData(that.Utils.sha3(result)).send();
+                that.BBExpertHash.methods.pushData(that.Utils.toHex(result)).send();
                 that.setState({
                     'submiting': false
                 });

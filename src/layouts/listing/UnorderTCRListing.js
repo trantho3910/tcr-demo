@@ -20,6 +20,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
+import { resolve } from 'path';
+import { rejects } from 'assert';
+const IPFS = require('ipfs-mini');
+const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+
 
 class SimpleDialog extends React.Component {
   handleClose = () => {
@@ -154,20 +159,57 @@ const styles = theme => ({
 class UnorderTCRListing extends React.Component {
   constructor(props, context) {
     super(props)
-    this.items = [{name:'a',status: 'Apply', created: 1542605000}, {name:'b',status: 'Challenge', created: 1542605105}, {name:'c',status: 'In ...', created: 1542605005}]
- 	this.state = {
-	    rows: [],
-	    page: 0,
-	    rowsPerPage: 5,
-	    open:false
-	};
-	this.context = context;
+    this.items = [];// [{name:'a',status: 'Apply', created: 1542605000}, {name:'b',status: 'Challenge', created: 1542605105}, {name:'c',status: 'In ...', created: 1542605005}]
+    this.state = {
+        rows: [],
+        page: 0,
+        rowsPerPage: 5,
+        open:false
+    };
+    this.context = context;
+    this.contracts = context.drizzle.contracts;
+    this.Utils = context.drizzle.web3.utils; 
+    this.count = 0; 
+
   }
+
+    getDataIPFS = async (ipfsHash) => {
+      try {
+        const url = 'https://cloudflare-ipfs.com/ipfs/' + ipfsHash;
+        const response = await fetch(url)        
+        const data = response.json()
+        return data;
+      } catch (e) {
+        console.log('error ', e);
+        return null;
+      }
+
+    }
+
   componentDidMount() {
-    console.log('todo here to get status from block change and enable button')
-  	this.setState({rows: this.items.map(x=>{
-	 		return {name:x.name, status: x.status, created: x.created, itemHash: this.context.drizzle.web3.utils.sha3(x.name)}
-	 	})}) 
+    this.contracts.BBExpertHash.events.SavingItemData({
+        fromBlock: 0
+    }, function(error, event){})
+    .on('data', async function(event){
+         //console.log(event.blockNumber); 
+        let ipfsHash =  this.Utils.toAscii(event.returnValues.ipfsHash);
+        let data = await this.getDataIPFS(ipfsHash, event.blockNumber);
+        const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
+        if(data) {
+          let obj = {name: data.fullName, status: 'Apply', created: res.timestamp, itemHash : ipfsHash};
+          this.items.push(obj);
+          this.setState({rows: this.items.map(x=>{
+            return {name:x.name, status: x.status, created: x.created, itemHash:x.itemHash}
+          })}) 
+        }
+    }.bind(this))
+    .on('changed', function(event){
+        // remove event from local database
+    })
+    .on('error', console.error);
+
+    console.log('todo here to get status from block change and enable button')//
+  	
   }
   
   handleChangePage = (event, page) => {

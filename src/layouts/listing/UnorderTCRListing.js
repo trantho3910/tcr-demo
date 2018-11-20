@@ -165,7 +165,7 @@ class UnorderTCRListing extends React.Component {
     this.state = {
         rows: [],
         page: 0,
-        rowsPerPage: 5,
+        rowsPerPage: 10,
         open:false
     };
     this.context = context;
@@ -190,6 +190,7 @@ class UnorderTCRListing extends React.Component {
     }
 
   componentDidMount() {
+    var that = this;
     this.contracts.BBExpertHash.events.SavingItemData({
         fromBlock: 0
     }, function(error, event){})
@@ -199,7 +200,7 @@ class UnorderTCRListing extends React.Component {
         let data = await this.getDataIPFS(ipfsHash, event.blockNumber);
         const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
         if(data) {
-          let obj = {name: data.fullName, status: 'Apply', created: res.timestamp, itemHash : ipfsHash};
+          let obj = {name: data.fullName, status: 'Apply', created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash)};
           this.items.push(obj);
           this.setState({rows: this.items.map(x=>{
             return {name:x.name, status: x.status, created: x.created, itemHash:x.itemHash}

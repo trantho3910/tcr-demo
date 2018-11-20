@@ -37,6 +37,8 @@ class Voting extends Component {
       this.VotingInstance = this.contracts.BBVoting;
       this.VotingHeplperInstance = this.contracts.BBVotingHelper; 
       this.web3 = context.drizzle.web3;
+      this.handleChange = this.handleChange.bind(this);
+
     }
     getPollID(){
       const BBUnOrderedTCRInstanceWeb3 = new this.web3.eth.Contract(this.BBUnOrderedTCRInstance.abi, this.BBUnOrderedTCRInstance.address);
@@ -117,7 +119,7 @@ class Voting extends Component {
         let bboAmount = this.state['bboAmountVote'];
         let pollID = this.state['pollID'];
         let choice = this.state['choice'];
-        let salt   = this.state['salt'];
+        let salt   = this.state.saltPassword
 
         console.log('choice',choice);
         console.log('salt',salt);
@@ -136,7 +138,7 @@ class Voting extends Component {
     
     handleChange = key => (event, value) => {
         this.setState({
-          [key]: value,
+          [key]: event.target.value,
         });
       };
 
@@ -153,7 +155,7 @@ class Voting extends Component {
         }
     }
     displayForm(){
-        let now = new Date();
+        let now = new Date()/1000;
         if(this.state.commitEndate && this.state.revealEndate){
             if(now < this.state.commitEndate){
                 if(this.state.votingState != 'Commit Vote')
@@ -205,8 +207,8 @@ class Voting extends Component {
                 <FormControlLabel value="0" control={<Radio />} label="Not" />
                 <TextField
               label="Encrypt Password"
-              value={this.state.salt}
-              onChange={this.handleChange('salt')}
+              value={this.state.saltPassword}
+              onChange={this.handleChange('saltPassword')}
               type="number"
               className={classes.textField}
               InputLabelProps={{
@@ -245,8 +247,8 @@ class Voting extends Component {
                 <FormControlLabel value="0" control={<Radio />} label="Not" />
                 <TextField
               label="Encrypt Password"
-              value={this.state.salt}
-              onChange={this.handleChange('salt')}
+              value={this.state.saltPassword}
+              onChange={this.handleChange('saltPassword')}
               type="number"
               className={classes.textField}
               InputLabelProps={{

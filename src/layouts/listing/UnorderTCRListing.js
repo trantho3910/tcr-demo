@@ -158,6 +158,7 @@ const styles = theme => ({
   },
 });
 
+
 class UnorderTCRListing extends React.Component {
   constructor(props, context) {
     super(props)
@@ -199,21 +200,20 @@ class UnorderTCRListing extends React.Component {
         let ipfsHash =  this.Utils.toAscii(event.returnValues.ipfsHash);
         let data = await this.getDataIPFS(ipfsHash, event.blockNumber);
         const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
+        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, that.Utils.sha3(ipfsHash)).call() 
+        let itemStatus = stage==1?'In Application':stage==2?'In Challenge':stage==3?'In Registry':'New'
+
         if(data) {
-          let obj = {name: data.fullName, status: 'Apply', created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash)};
+          let obj = {name: data.fullName, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash)};
           this.items.push(obj);
-          this.setState({rows: this.items.map(x=>{
-            return {name:x.name, status: x.status, created: x.created, itemHash:x.itemHash}
-          })}) 
+          this.setState({rows: this.items})
         }
     }.bind(this))
     .on('changed', function(event){
         // remove event from local database
     })
     .on('error', console.error);
-
     console.log('todo here to get status from block change and enable button')//
-  	
   }
   
   handleChangePage = (event, page) => {
@@ -233,22 +233,22 @@ class UnorderTCRListing extends React.Component {
 
     var dialogcomponent = ''
     var dialogtitle = ''
-    if(componentPros.status == 'Apply'){
+    if(componentPros.status == 'New'){
       dialogcomponent = Apply
-      dialogtitle = 'Application'
+      dialogtitle = 'Apply'
     }
-    if(componentPros.status == 'Challenge'){
+    if(componentPros.status == 'In Application' || componentPros.status == 'In Registry'){
       dialogcomponent = Challenge
       dialogtitle = 'Challenge'
     }
-    if(componentPros.status == 'Voting'){
+    if(componentPros.status == 'In Challenge'){
       dialogcomponent = Voting
       dialogtitle = 'Voting'
     }
 
     let btnColor = "primary"
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
-        {item.status}
+        {dialogtitle}
       </Button>
       )
   }

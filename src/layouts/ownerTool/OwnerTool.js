@@ -31,6 +31,12 @@ class OwnerTool extends Component {
         let minStake = this.Utils.toWei('100', 'ether');
         let initQuorum = 10;
         let exitDuration = 2 * 60 * 60;
+        if(applicationDuration == null || commitDuration == null || revealDuration == null || minStake == null) {
+            that.setState({
+                'submiting': false
+            });
+            return;
+        }
 
         that.BBTCRHelper.methods.setParamsUnOrdered(10, applicationDuration, commitDuration ,revealDuration, minStake, initQuorum, exitDuration).send();
         that.setState({
@@ -51,7 +57,6 @@ class OwnerTool extends Component {
         }
         return (
             <div className="container-fix-600">
-            <h3 className = "newstype">Set TCR Params only Owner</h3>
             <p>
             <input className="input-bbo" key="applicationDuration" type="text" name="applicationDuration" placeholder = "Application Duration" onChange={this.handleInputChange} />
             </p>

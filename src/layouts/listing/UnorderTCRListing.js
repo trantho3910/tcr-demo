@@ -21,10 +21,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
 import Voting from '../voting/Voting'
-
+import TCRUtil from '../tcrUtil/TCRUtil'
 import { resolve } from 'path';
 import { rejects } from 'assert';
-import Voting from '../voting/Voting';
 const IPFS = require('ipfs-mini');
 const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
@@ -229,6 +228,15 @@ class UnorderTCRListing extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  displayUpdateButton = (item) => {
+    let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status}
+    let btnColor = "primary"
+  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>
+        Update
+      </Button>
+      )
+  }
+
   displayActionButton = (item) => {
     let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status}
 
@@ -247,7 +255,7 @@ class UnorderTCRListing extends React.Component {
       dialogtitle = 'Voting'
     }
 
-    let btnColor = "primary"
+    let btnColor = "secondary"
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
         {item.status}
       </Button>
@@ -275,6 +283,7 @@ class UnorderTCRListing extends React.Component {
                     </TableCell>
                     <TableCell>{row.created}</TableCell>
                     <TableCell>{row.status}</TableCell>
+                    <TableCell>{this.displayUpdateButton(row)}</TableCell>
                     <TableCell>{this.displayActionButton(row)}</TableCell>
                   </TableRow>
                 );

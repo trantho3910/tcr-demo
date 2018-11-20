@@ -10,6 +10,62 @@ import TCRUtil from '../tcrUtil/TCRUtil'
 import OwnerTool from '../ownerTool/OwnerTool'
 import RegisterItem from '../registerItem/RegisterItem'
 import UnorderTCRListing from '../listing/UnorderTCRListing'
+import Button from '@material-ui/core/Button';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import { withStyles } from '@material-ui/core/styles';
+
+
+const styles = theme => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 3,
+  },
+  table: {
+    minWidth: 500,
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+   button: {
+    margin: theme.spacing.unit,
+  },
+});
+
+class SimpleDialog extends React.Component {
+  handleClose = () => {
+    this.props.onClose(this.props.selectedValue);
+  };
+
+  handleListItemClick = value => {
+    this.props.onClose(value);
+  };
+
+  render() {
+    const { classes, onClose, selectedValue, componentPros, title, ...other } = this.props;
+    var  ChildComponent = this.props.component
+    if(!this.props.component)
+      return '';
+    return (
+      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+        <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
+        <DialogContent>
+        <ChildComponent componentPros={this.props.componentPros} />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+}
+
+SimpleDialog.propTypes = {
+  classes: PropTypes.object.isRequired,
+  onClose: PropTypes.func,
+  selectedValue: PropTypes.string,
+  title: PropTypes.string
+};
+
+const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
 
 class ProgramInner extends Component {
   constructor(props, context) {
@@ -19,22 +75,11 @@ class ProgramInner extends Component {
     this.account = this.props.accounts[0];
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    // this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
-    // this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
     this.state = initialState;
     this.Utils = context.drizzle.web3.utils;
     this.context = context;
 
-    //console.log('this.bboHoldKey', this.Utils.hexToNumberString (this.bboHoldKey));
-    // this.contracts['BBTCRHelper'].address =  '0xee6004216682e3e0eb7611fc234e13a967461f2b';
-    // this.contracts['BBUnOrderedTCR'].address =  '0x9ec9bb2775c37730bbd7ed203fe3e8e73d6dfc23';
-
-    //console.log('paramTCR', this.contracts['BBTCRHelper'].methods['owner'].cacheCall());
-    // console.log('this.paramTCR',this.paramTCR);
-    //this.contracts['BBTCRHelper']['getListParamsUnOrdered'][this.paramTCR].value;
-
-   
-    
+  
   }
 
   async getParams() {
@@ -91,42 +136,17 @@ class ProgramInner extends Component {
     this.setState({ [event.target.name]: event.target.value });
   }
 
+  handleClickOpen = (componentPros, dialogcomponent, dialogtitle) => {
+    this.setState({ dialogcomponent: dialogcomponent, dialogtitle: dialogtitle, componentPros: componentPros });
+    this.setState({open:true})
+  };
 
+  onModalClose = ()=> {
+    this.setState({open:false})
+  }
 
   render() {
-    var bboBalance = 0;
-    var bboHoldBalance = 0;
-    // if(this.account != this.props.accounts[0]){
-    //   this.account = this.props.accounts[0]
-    //   this.bboBalanceKey = this.contracts['BBOTest'].methods['balanceOf'].cacheCall(...[this.account])
-    //   this.bboHoldKey = this.contracts.BBOHoldingContract.methods['holdBalance'].cacheCall({from:this.account})
-    //   this.paramTCR =  this.contracts['BBTCRHelper'].methods['getListParamsUnOrdered'].cacheCall(this.Utils.toHex(10));
-
-    // }else{
-    //   if(this.bboBalanceKey in this.props.contracts['BBOTest']['balanceOf']) {
-    //     bboBalance = this.props.contracts['BBOTest']['balanceOf'][this.bboBalanceKey].value;
-    //     bboBalance = this.context.drizzle.web3.utils.fromWei(bboBalance,'ether');
-    //   }
-    //   if(this.bboHoldKey in this.props.contracts.BBOHoldingContract['holdBalance']) {
-    //     bboHoldBalance = this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey].value;
-    //     //console.log('this.bboHoldKey',this.bboHoldKey);
-
-    //     //console.log('bboHoldBalance',this.props.contracts.BBOHoldingContract['holdBalance'][this.bboHoldKey]);
-
-    //     bboHoldBalance = this.context.drizzle.web3.utils.fromWei(bboHoldBalance,'ether');
-    //   }
-
-    //  // console.log(this.props.contracts.BBTCRHelper['getListParamsUnOrdered']);
-
-    //   // if(this.paramTCR in this.props.contracts.BBTCRHelper['getListParamsUnOrdered']) {
-    //   //   //console.log('this.paramTCR ',this.paramTCR );
-    //   //   //var nnn = this.props.contracts.BBTCRHelper['getListParamsUnOrdered'][this.paramTCR];
-    //   //   //console.log('aaaaaaa',nnn);
-
-    //   // }
-    // }
-    
-   
+  
     return (
       <main className="container">
         <div className="">
@@ -135,10 +155,18 @@ class ProgramInner extends Component {
           
           </div>
           <UnorderTCRListing></UnorderTCRListing>
-          <RegisterItem></RegisterItem>
-          
-           <TCRUtil></TCRUtil>
-           <OwnerTool></OwnerTool> 
+          <br></br>
+          <p>Click to Register Item</p>
+          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
+          <p>Set Prams TCR</p>
+          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, OwnerTool, 'Set TCR Params only Owner')} color = "primary" variant="outlined">Update Params</Button>
+          <SimpleDialogWrapped 
+         open={this.state.open} 
+         component={this.state.dialogcomponent}
+         title={this.state.dialogtitle}
+         onClose={this.onModalClose}
+         componentPros={this.state.componentPros}
+        />
         </div>
       </main>
     )

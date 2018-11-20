@@ -20,11 +20,12 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
+import Voting from '../voting/Voting'
+
 import { resolve } from 'path';
 import { rejects } from 'assert';
 const IPFS = require('ipfs-mini');
 const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
-import Voting from '../voting/Voting'
 
 
 class SimpleDialog extends React.Component {

@@ -3,17 +3,13 @@ import PropTypes from 'prop-types'
 import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
 import CurrencyFormat from 'react-currency-format';
-import Challenge from '../challenge/Challenge'
-import Apply from '../apply/Apply'
-import Voting from '../voting/Voting'
-import TCRUtil from '../tcrUtil/TCRUtil'
+import NewList from '../newList/NewList'
 import OwnerTool from '../ownerTool/OwnerTool'
-import RegisterItem from '../registerItem/RegisterItem'
-import UnorderTCRListing from '../listing/UnorderTCRListing'
 import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
+import ListIDPanel from '../listing/ListIDPanel'
 import { withStyles } from '@material-ui/core/styles';
 
 
@@ -67,7 +63,7 @@ SimpleDialog.propTypes = {
 
 const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
 
-class ProgramInner extends Component {
+class Manager extends Component {
   constructor(props, context) {
     super(props)
     this.contracts = context.drizzle.contracts
@@ -145,12 +141,12 @@ class ProgramInner extends Component {
     this.setState({open:false})
   }
   componentDidMount(){
-    let that = this;
-     this.contracts.BBTCRHelper.methods.getListParams(10).call().then(function(rs){
-        console.log(rs)
-        that.setState({listParams: rs});
+    // let that = this;
+    //  this.contracts.BBTCRHelper.methods.getListParams(10).call().then(function(rs){
+    //     console.log(rs)
+    //     that.setState({listParams: rs});
 
-      });
+    //   });
   }
   displayParams =() => {
     if(this.state.listParams){
@@ -186,14 +182,12 @@ class ProgramInner extends Component {
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-          <h1 className = "newstype">Bigbom Ads Expert List</h1>
+          <h1 className = "newstype">Ads Expert List Manager</h1>
           </div>
-          <h3>Become an expert &nbsp;&nbsp;&nbsp;&nbsp;
-          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
+          <h3>Create New List &nbsp;&nbsp;&nbsp;&nbsp;
+          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, NewList, 'New List Form')} color = "primary" variant="outlined">New</Button>
           </h3>
-          <UnorderTCRListing></UnorderTCRListing>
-          <br></br>
-          {this.displayParams()}
+          <ListIDPanel></ListIDPanel>
           <SimpleDialogWrapped 
          open={this.state.open} 
          component={this.state.dialogcomponent}
@@ -207,7 +201,7 @@ class ProgramInner extends Component {
   }
 }
 
-ProgramInner.contextTypes = {
+Manager.contextTypes = {
   drizzle: PropTypes.object
 }
 const mapStateToProps = state => {
@@ -217,4 +211,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default drizzleConnect(ProgramInner, mapStateToProps)
+export default drizzleConnect(Manager, mapStateToProps)

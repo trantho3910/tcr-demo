@@ -4,7 +4,7 @@ import '../../App.css'
 import { drizzleConnect } from 'drizzle-react'
 
 
-class OwnerTool extends Component {
+class UpdateToken extends Component {
     constructor(props, context) {
       super(props)
       this.contracts = context.drizzle.contracts
@@ -26,19 +26,15 @@ class OwnerTool extends Component {
             'submiting': true
         });
         let applicationDuration = that.state['applicationDuration'];
-        let commitDuration = that.state['commitDuration'];
-        let revealDuration = that.state['revealDuration'];
-        let minStake = this.Utils.toWei('100', 'ether');
-        let initQuorum = 10;
-        let exitDuration = 2 * 60 * 60;
-        if(applicationDuration == null || commitDuration == null || revealDuration == null || minStake == null) {
+       
+        if(applicationDuration == null) {
             that.setState({
                 'submiting': false
             });
             return;
         }
 
-        that.BBTCRHelper.methods.setParamsUnOrdered(this.props.componentPros.listID, applicationDuration, commitDuration ,revealDuration, minStake, initQuorum, exitDuration).send();
+        that.BBTCRHelper.methods.updateToken(this.props.componentPros.listID, applicationDuration).send();
         that.setState({
             'submiting': false
         });
@@ -59,16 +55,11 @@ class OwnerTool extends Component {
             <div className="container-fix-600">
             <p>Name: {this.props.componentPros.name}</p>
             <p>ListID: {this.props.componentPros.listID}</p>
+            <p>Current Token: {this.props.componentPros.token}</p>
             <p>
-            <input className="input-bbo" key="applicationDuration" type="text" name="applicationDuration" placeholder = "Application Duration" onChange={this.handleInputChange} />
+            <input className="input-bbo" key="applicationDuration" type="text" name="applicationDuration" placeholder = "Token Address" onChange={this.handleInputChange} />
             </p>
-            <p>
-            <input className="input-bbo" key="commitDuration" type="text" name="commitDuration" placeholder = "Commit Duration" onChange={this.handleInputChange} />
-            </p>
-            <p>
-            <input className="input-bbo" key="revealDuration" type="text" name="revealDuration" placeholder = "Reveal Duration" onChange={this.handleInputChange} />
-            </p>
-            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateParams}>Update Params</button>
+            <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateParams}>Update</button>
             </p>
            
             
@@ -79,7 +70,7 @@ class OwnerTool extends Component {
     
 }
 
-OwnerTool.contextTypes = {
+UpdateToken.contextTypes = {
     drizzle: PropTypes.object
 }
 const mapStateToProps = state => {
@@ -89,4 +80,4 @@ const mapStateToProps = state => {
     }
 }
   
-export default drizzleConnect(OwnerTool, mapStateToProps)
+export default drizzleConnect(UpdateToken, mapStateToProps)

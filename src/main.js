@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { HashRouter, Switch, Route } from 'react-router-dom'
 import ProgramContainer from './layouts/program/programContainer'
-import Join from            './layouts/join/join'
+import ManagerPanel from            './layouts/manager/MangerPanel'
 import Introduce from     './layouts/introduce/introduce'
 import Navigation from "./navigations";
 
@@ -12,7 +12,8 @@ export default () => (
         <React.Fragment>
         <Navigation />
         <Switch>
-            <Route exact path="/" component={ProgramContainer} />  
+            <Route exact path="/" component={ProgramContainer} />
+            <Route exact path="/manager" component={ManagerPanel} />    
             <Route path='/pages/:page' component={Introduce}/>
         </Switch>
         </React.Fragment>

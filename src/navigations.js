@@ -10,6 +10,7 @@ class Navigation extends Component {
       <main>
     <ul className="menu" >
         <li><Link to="/">Home</Link></li>
+        <li><Link to="/manager">Manager</Link></li>
         <li><a href="https://github.com/bigbomio/tcr-demo/"target = "_bank">GitHub</a></li>
         <li><a href="https://bigbom.com/"target = "_bank">Contact</a></li>
     </ul>

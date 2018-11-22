@@ -19,8 +19,8 @@ import Button from '@material-ui/core/Button';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import UpdateToken from '../tcrUtil/TCRUtil'
-import OwnerTool from '../updateToken/UpdateToken'
+import OwnerTool from '../ownerTool/OwnerTool'
+import UpdateToken from '../updateToken/UpdateToken'
 import { resolve } from 'path';
 import { rejects } from 'assert';
 const IPFS = require('ipfs-mini');
@@ -221,6 +221,9 @@ class ListIDPanel extends React.Component {
     this.setState({ page });
   };
   handleClickOpen = (componentPros, dialogcomponent, dialogtitle) => {
+    if(dialogcomponent == OwnerTool) {
+
+    }
     this.setState({ dialogcomponent: dialogcomponent, dialogtitle: dialogtitle, componentPros: componentPros });
     this.setState({open:true})
   };
@@ -239,7 +242,7 @@ class ListIDPanel extends React.Component {
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
     let btnColor = "primary"
     
-  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, 'Update Token')} variant="outlined" color={btnColor}>
+  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, UpdateToken, 'Update Token')} variant="outlined" color={btnColor}>
         Update Token
       </Button>
       )
@@ -247,14 +250,14 @@ class ListIDPanel extends React.Component {
   }
 
   displayActionButton = (item) => {
+
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
- 
-    var btnColor = "primary"
-      
-  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, "Update Prams")} variant="outlined" color={btnColor}>
-        Update Params
-      </Button>
-      )
+      var btnColor = "primary" 
+      return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, "Update Prams")} variant="outlined" color={btnColor}>
+          Update Params
+        </Button>
+        )
+
   }
   onModalClose = ()=> {
     this.setState({open:false})

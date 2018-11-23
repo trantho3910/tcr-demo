@@ -55,7 +55,8 @@ class UpdateToken extends Component {
             <div className="container-fix-600">
             <p>Name: {this.props.componentPros.name}</p>
             <p>ListID: {this.props.componentPros.listID}</p>
-            <p>Current Token: {this.props.componentPros.token}</p>
+            <p>Current Token Address: {this.props.componentPros.token}</p>
+            <p>Current Token Name: {this.props.componentPros.tokenName}</p>
             <p>
             <input className="input-bbo" key="applicationDuration" type="text" name="applicationDuration" placeholder = "Token Address" onChange={this.handleInputChange} />
             </p>

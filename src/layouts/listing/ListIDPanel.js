@@ -24,6 +24,7 @@ import UpdateToken from '../updateToken/UpdateToken'
 import { Link } from 'react-router-dom'
 import { resolve } from 'path';
 import { rejects } from 'assert';
+import { now } from 'moment';
 const IPFS = require('ipfs-mini');
 const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
@@ -173,6 +174,7 @@ class ListIDPanel extends React.Component {
     this.contracts = context.drizzle.contracts;
     this.Utils = context.drizzle.web3.utils; 
     this.count = 0; 
+    this.TokenABI = context.drizzle.contracts.BBOTest.abi;
     
   }
 
@@ -190,6 +192,7 @@ class ListIDPanel extends React.Component {
     }
 
   componentDidMount() {
+      //console.log(this.context.drizzle.web3.eth.Contract);
       var that = this;
       this.contracts.BBTCRHelper.events.CreateListID({
         //  filter : {owner : this.props.accounts[0]},
@@ -203,9 +206,15 @@ class ListIDPanel extends React.Component {
          let listID = await event.returnValues.listID;
          let token = await this.contracts.BBTCRHelper.methods.getToken(listID).call();
 
+         let tokenContract = await new this.context.drizzle.web3.eth.Contract(this.TokenABI, token, {
+          from: this.props.accounts[0], // default from address
+          gasPrice: '20000000000' // default gas price in wei ~20gwei
+        });
+                 
+         let tokenname = await this.getTokenName(tokenContract);
 
           if(data) {
-            let obj = {name: data.name, listID: listID, token: token,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash)};
+            let obj = {name: data.name, listID: listID, token: token, tokenName : tokenname ,created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash)};
             this.items.push(obj);
             this.setState({rows: this.items})
           }
@@ -216,6 +225,20 @@ class ListIDPanel extends React.Component {
       .on('error', console.error);
 
    
+  }
+
+   getTokenName(tokenContract) {
+     return new Promise(async(resolve, reject) => {
+      tokenContract.methods.name.call().call(function(error ,result){
+        if(error) {
+            console.log('error :' + error);
+            resolve(null);
+        } else {
+           resolve(result);
+        }
+      });
+     })
+    
   }
   
   handleChangePage = (event, page) => {
@@ -237,7 +260,7 @@ class ListIDPanel extends React.Component {
       }
   }
   displayUpdateButton = (item) => {
-    let componentPros = {name:item.name, listID: item.listID, token: item.token}
+    let componentPros = {name:item.name, listID: item.listID, token: item.token, tokenName : item.tokenName}
     let btnColor = "primary"
     if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, UpdateToken, 'Update Token')} variant="outlined" color={btnColor}>
@@ -290,7 +313,7 @@ class ListIDPanel extends React.Component {
                     <b><Link to={'/listing/' + row.listID}>{row.name}</Link></b>
                     </TableCell>
                     <TableCell>{this.displayTime(row.created)}</TableCell>
-                    <TableCell>{row.token}</TableCell>
+                    <TableCell>{row.tokenName}</TableCell>
                     <TableCell>{this.displayUpdateButton(row)} {this.displayActionButton(row)}</TableCell>
                   </TableRow>
                 );

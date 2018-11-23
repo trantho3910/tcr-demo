@@ -1,6 +1,7 @@
 import { drizzleConnect } from 'drizzle-react'
 import React, { Children, Component } from 'react'
 import PropTypes from 'prop-types'
+import errorRopsten from './errorNetwork.png'
 
 /*
  * Create component.
@@ -52,16 +53,17 @@ class ProgramLoading extends Component {
       return this.props.loadingComp
     }
 
-    return(
-      <main className="container loading-screen">
-        <div className="pure-g">
-          <div className="pure-u-1-1">
-            <h1>⚙️</h1>
-            <p>Loading...</p>
-          </div>
-        </div>
-      </main>
-    )
+    return (
+       <main className="container loading-screen">
+       <div className="pure-g">
+       <div className="pure-u-1-1 header">
+      <h1>Oops, you’re on the wrong network</h1>
+      <h2>Simply open MetaMask and switch over to the Ropsten Ethereum Network.</h2>
+      <img src= {errorRopsten} width = "400"/> 
+      </div>
+    </div>
+    </main>
+    );
   }
 }
 

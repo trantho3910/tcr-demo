@@ -143,13 +143,44 @@ class ProgramInner extends Component {
   onModalClose = ()=> {
     this.setState({open:false})
   }
+
+  getDataIPFS = async (ipfsHash) => {
+    try {
+      const url = 'https://cloudflare-ipfs.com/ipfs/' + ipfsHash;
+      const response = await fetch(url)        
+      const data = response.json()
+      return data;
+    } catch (e) {
+      console.log('error ', e);
+      return null;
+    }
+
+  }
+
   componentDidMount(){
     let that = this;
      this.contracts.BBTCRHelper.methods.getListParams(this.props.listID).call().then(function(rs){
-        console.log(rs)
+        //console.log(rs)
         that.setState({listParams: rs});
 
       });
+
+      //
+      this.contracts.BBTCRHelper.events.CreateListID({
+          filter : {listID : this.props.listID},
+          fromBlock: 0
+      }, function(error, event){})
+      .on('data', async function(event){
+         // console.log(event.returnValues); 
+         let ipfsHash =  this.Utils.toAscii(event.returnValues.nameHash);
+         let data = await this.getDataIPFS(ipfsHash);
+         that.setState({'listName':data.name});
+      }.bind(this))
+      .on('changed', function(event){
+          // remove event from local database
+      })
+      .on('error', console.error);
+
   }
   displayParams =() => {
     if(this.state.listParams){
@@ -185,7 +216,7 @@ class ProgramInner extends Component {
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-          <h1 className = "newstype">{'{' + 'this.state.listName' + '}'}</h1>
+          <h1 className = "newstype">{this.state['listName']}</h1>
           </div>
           <h3>Join this list? &nbsp;&nbsp;&nbsp;&nbsp;
           <Button size="small" onClick={this.handleClickOpen.bind(this, {listID:this.props.listID}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>

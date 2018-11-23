@@ -16,52 +16,11 @@ import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import { drizzleConnect } from 'drizzle-react'
 import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
+
 import OwnerTool from '../ownerTool/OwnerTool'
 import UpdateToken from '../updateToken/UpdateToken'
+import { SimpleDialogWrapped } from './UnorderTCRListing'
 import { Link } from 'react-router-dom'
-import { resolve } from 'path';
-import { rejects } from 'assert';
-import { now } from 'moment';
-const IPFS = require('ipfs-mini');
-const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
-
-
-class SimpleDialog extends React.Component {
-  handleClose = () => {
-    this.props.onClose(this.props.selectedValue);
-  };
-
-  handleListItemClick = value => {
-    this.props.onClose(value);
-  };
-
-  render() {
-    const { classes, onClose, selectedValue, componentPros, title, ...other } = this.props;
-    var  ChildComponent = this.props.component
-    if(!this.props.component)
-      return '';
-    return (
-      <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
-        <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
-        <DialogContent>
-        <ChildComponent componentPros={this.props.componentPros} />
-        </DialogContent>
-      </Dialog>
-    );
-  }
-}
-
-SimpleDialog.propTypes = {
-  classes: PropTypes.object.isRequired,
-  onClose: PropTypes.func,
-  selectedValue: PropTypes.string,
-  title: PropTypes.string
-};
-
-const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
 
 
 const actionsStyles = theme => ({
@@ -262,7 +221,7 @@ class ListIDPanel extends React.Component {
   displayUpdateButton = (item) => {
     let componentPros = {name:item.name, listID: item.listID, token: item.token, tokenName : item.tokenName}
     let btnColor = "primary"
-    if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+    if(this.props.accounts[0] === '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, UpdateToken, 'Update Token')} variant="outlined" color={btnColor}>
         Update Token
       </Button>
@@ -275,7 +234,7 @@ class ListIDPanel extends React.Component {
 
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
       var btnColor = "primary" 
-      if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+      if(this.props.accounts[0] === '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
       return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, "Update Prams")} variant="outlined" color={btnColor}>
           Update Params
         </Button>

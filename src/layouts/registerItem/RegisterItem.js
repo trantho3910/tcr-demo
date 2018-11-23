@@ -44,6 +44,7 @@ class RegisterItem extends Component {
         let address = that.state['address'];
         let email = that.state['email'];
         let phone = that.state['phone'];
+        let linkedin = that.state['linkedin'];
 
         if(fullName == null || address == null || email == null || phone == null) {
             that.setState({
@@ -56,7 +57,7 @@ class RegisterItem extends Component {
 
         console.log(data);
 
-        ipfs.addJSON({fullName : fullName, address : address, email : email, phone : phone}, (err, result) => {
+        ipfs.addJSON({fullName : fullName, address : address, email : email, phone : phone, linkedin:linkedin}, (err, result) => {
             if(err) {
                 console.log(err);
                 that.setState({
@@ -79,8 +80,6 @@ class RegisterItem extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    
-
     render() {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
@@ -98,6 +97,9 @@ class RegisterItem extends Component {
             </p>
             <p>
             <input className="input-bbo" key="phone" type="text" name="phone" placeholder = "Phone Number" onChange={this.handleInputChange} />
+            </p>
+            <p>
+            <input className="input-bbo" key="linkedin" type="text" name="linkedin" placeholder = "Linkedin Profile" onChange={this.handleInputChange} />
             </p>
             <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateParams}>Register</button>
             </p>

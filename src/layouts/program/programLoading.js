@@ -59,7 +59,7 @@ class ProgramLoading extends Component {
        <div className="pure-u-1-1 header">
       <h1>Oops, you’re on the wrong network</h1>
       <h2>Simply open MetaMask and switch over to the Ropsten Ethereum Network.</h2>
-      <img src= {errorRopsten} width = "400"/> 
+      <img src={errorRopsten} width = "400"/> 
       </div>
     </div>
     </main>

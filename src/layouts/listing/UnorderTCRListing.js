@@ -23,11 +23,23 @@ import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
 import Voting from '../voting/Voting'
 import TCRUtil from '../tcrUtil/TCRUtil'
-import { resolve } from 'path';
-import { rejects } from 'assert';
-const IPFS = require('ipfs-mini');
-const ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
+
+const styles = theme => ({
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 3,
+  },
+  table: {
+    minWidth: 500,
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+   button: {
+    margin: theme.spacing.unit,
+  },
+});
 
 class SimpleDialog extends React.Component {
   handleClose = () => {
@@ -42,12 +54,14 @@ class SimpleDialog extends React.Component {
     const { classes, onClose, selectedValue, componentPros, title, ...other } = this.props;
     var  ChildComponent = this.props.component
     if(!this.props.component)
-      return '';
+      return (<div></div>);
     return (
       <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
         <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
         <DialogContent>
+        <div>
         <ChildComponent componentPros={this.props.componentPros} />
+        </div>
         </DialogContent>
       </Dialog>
     );
@@ -62,7 +76,6 @@ SimpleDialog.propTypes = {
 };
 
 const SimpleDialogWrapped = withStyles(styles)(SimpleDialog);
-
 
 const actionsStyles = theme => ({
   root: {
@@ -142,22 +155,6 @@ TablePaginationActions.propTypes = {
 const TablePaginationActionsWrapped = withStyles(actionsStyles, { withTheme: true })(
   TablePaginationActions,
 );
-
-const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
-  },
-  table: {
-    minWidth: 500,
-  },
-  tableWrapper: {
-    overflowX: 'auto',
-  },
-   button: {
-    margin: theme.spacing.unit,
-  },
-});
 
 
 class UnorderTCRListing extends React.Component {
@@ -357,5 +354,5 @@ const mapStateToProps = state => {
       contracts: state.contracts
     }
 }
-  
 export default withStyles(styles)(drizzleConnect(UnorderTCRListing, mapStateToProps));
+export {SimpleDialogWrapped}

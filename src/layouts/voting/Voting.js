@@ -177,7 +177,6 @@ class Voting extends Component {
         }
     }
     displayReward(){
-         const { classes } = this.props;
          this.getReward();
         return(
             <div>

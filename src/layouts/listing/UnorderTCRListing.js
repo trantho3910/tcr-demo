@@ -203,7 +203,7 @@ class UnorderTCRListing extends React.Component {
         let isOwner = await this.contracts.BBTCRHelper.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash, this.props.accounts[0]).call();
 
         if(data) {
-          let obj = {name: data.fullName, address:data.address, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
+          let obj = {name: data.fullName, address:data.address, phone : data.phone, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
           this.items.push(obj);
           this.setState({rows: this.items})
         }
@@ -235,7 +235,7 @@ class UnorderTCRListing extends React.Component {
       }
   }
   displayUpdateButton = (item) => {
-    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner, stage : item.stage}
+    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
     let btnColor = "primary"
     if(componentPros.isOwner) {
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>
@@ -246,7 +246,7 @@ class UnorderTCRListing extends React.Component {
   }
 
   displayActionButton = (item) => {
-    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, extraData: item.name, status: item.status}
+    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
 
     var dialogcomponent = ''
     var dialogtitle = ''

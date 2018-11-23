@@ -100,7 +100,10 @@ class Challenge extends Component {
         return (
             <div className="container-fix-600">
             <h3 className = "newstype">You are about challenge to ITEM</h3>
-            <p>ItemHash: {this.props.componentPros.itemHash}</p>
+            <p>Name: {this.props.componentPros.name}</p>
+            <p>Email: {this.props.componentPros.email}</p>
+            <p>Address: {this.props.componentPros.address}</p>
+            <p>Phone: {this.props.componentPros.phone}</p>
             <div>
             <Button variant="contained" size="small" color="primary" onClick={this.handleChallenge}>Challenge</Button>
             </div>

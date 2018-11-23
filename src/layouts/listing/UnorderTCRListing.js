@@ -355,4 +355,4 @@ const mapStateToProps = state => {
     }
 }
 export default withStyles(styles)(drizzleConnect(UnorderTCRListing, mapStateToProps));
-export {SimpleDialogWrapped}
+export {SimpleDialogWrapped, TablePaginationActionsWrapped}

@@ -203,8 +203,7 @@ class UnorderTCRListing extends React.Component {
         const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
         let stage = await this.contracts.BBTCRHelper.methods.getItemStage(this.props.listID, that.Utils.sha3(ipfsHash)).call() 
         let itemStatus = stage==1?'In Application':stage==2?'In Challenge':stage==3?'In Registry':'New'
-        let isOwner = await this.contracts.BBUnOrderedTCR.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash).call();
-
+        let isOwner = await this.contracts.BBTCRHelper.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash, this.props.accounts[0]).call();
 
         if(data) {
           let obj = {name: data.fullName, address:data.address, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};

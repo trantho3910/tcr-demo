@@ -29,9 +29,9 @@ class OwnerTool extends Component {
         let commitDuration = that.state['commitDuration'];
         let revealDuration = that.state['revealDuration'];
         let minStake = this.Utils.toWei(that.state['tokenStake'], 'ether');
-        let initQuorum = 10;
-        let exitDuration = 2 * 60 * 60;
-        if(applicationDuration == null || commitDuration == null || revealDuration == null || minStake == null) {
+        let initQuorum = that.state['initQuorum'];
+        let exitDuration = that.state['exitDuration'];
+        if(applicationDuration == null || commitDuration == null || revealDuration == null || minStake == null || initQuorum == null || exitDuration == null) {
             that.setState({
                 'submiting': false
             });
@@ -47,7 +47,7 @@ class OwnerTool extends Component {
     componentDidMount(){
         let that = this;
          this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call().then(function(rs){
-            //console.log(rs)
+            console.log(rs)
             that.setState({listParams: rs});
     
           });
@@ -65,6 +65,8 @@ class OwnerTool extends Component {
               <p>Current Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
               <p>Current Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
               <p>Current Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
+              <p>Current Init Quorum: {this.state.listParams.initQuorum} (s)</p>
+              <p>Current Exit Application Duration: {this.state.listParams.exitDuration} (s)</p>
               </div>
               )
         }
@@ -93,6 +95,12 @@ class OwnerTool extends Component {
             </p>
             <p>
             <input className="input-bbo" key="revealDuration" type="text" name="revealDuration" placeholder = "Reveal Duration" onChange={this.handleInputChange} />
+            </p>
+            <p>
+            <input className="input-bbo" key="initQuorum" type="text" name="initQuorum" placeholder = "Init Quorum" onChange={this.handleInputChange} />
+            </p>
+            <p>
+            <input className="input-bbo" key="exitDuration" type="text" name="exitDuration" placeholder = "Exit Application Duration" onChange={this.handleInputChange} />
             </p>
             <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateParams}>Update Params</button>
             </p>

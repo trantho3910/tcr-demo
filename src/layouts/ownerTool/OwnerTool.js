@@ -57,11 +57,8 @@ class OwnerTool extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    displayParams =() => {
-
-
+    displayParams () {
         if(this.state.listParams){
-           
             return (
               <div>
               <p>Current Application Duration: {this.state.listParams.applicationDuration} (s)</p>

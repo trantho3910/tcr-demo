@@ -21,6 +21,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import OwnerTool from '../ownerTool/OwnerTool'
 import UpdateToken from '../updateToken/UpdateToken'
+import { Link } from 'react-router-dom'
 import { resolve } from 'path';
 import { rejects } from 'assert';
 const IPFS = require('ipfs-mini');
@@ -191,7 +192,7 @@ class ListIDPanel extends React.Component {
   componentDidMount() {
       var that = this;
       this.contracts.BBTCRHelper.events.CreateListID({
-          filter : {owner : this.props.accounts[0]},
+        //  filter : {owner : this.props.accounts[0]},
           fromBlock: 0
       }, function(error, event){})
       .on('data', async function(event){
@@ -238,22 +239,26 @@ class ListIDPanel extends React.Component {
   displayUpdateButton = (item) => {
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
     let btnColor = "primary"
-    
+    if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, UpdateToken, 'Update Token')} variant="outlined" color={btnColor}>
         Update Token
       </Button>
       )
-    
+    else
+      return ''
   }
 
   displayActionButton = (item) => {
 
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
       var btnColor = "primary" 
+      if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
       return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, "Update Prams")} variant="outlined" color={btnColor}>
           Update Params
         </Button>
         )
+        else
+          return ''
 
   }
   onModalClose = ()=> {
@@ -282,7 +287,7 @@ class ListIDPanel extends React.Component {
                 return (
                   <TableRow key={row.listID}>
                     <TableCell component="th" scope="row">
-                    <b>{row.name}</b>
+                    <b><Link to={'/listing/' + row.listID}>{row.name}</Link></b>
                     </TableCell>
                     <TableCell>{this.displayTime(row.created)}</TableCell>
                     <TableCell>{row.token}</TableCell>

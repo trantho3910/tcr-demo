@@ -44,7 +44,7 @@ class Voting extends Component {
       const BBUnOrderedTCRInstanceWeb3 = new this.web3.eth.Contract(this.BBUnOrderedTCRInstance.abi, this.BBUnOrderedTCRInstance.address);
       let that = this;
       return BBUnOrderedTCRInstanceWeb3.getPastEvents('Challenge', 
-                {filter:{listID:10, itemHash: that.props.componentPros.itemHash},
+                {filter:{listID:this.props.componentPros.listID, itemHash: that.props.componentPros.itemHash},
                  fromBlock:4464719,
                  toBlock: 'latest' }, function(events, err){}
                  ).then(function(events){

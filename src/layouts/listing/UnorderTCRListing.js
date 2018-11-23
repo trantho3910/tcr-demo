@@ -194,16 +194,16 @@ class UnorderTCRListing extends React.Component {
   componentDidMount() {
     var that = this;
     this.contracts.BBExpertHash.events.SavingItemData({
-        fromBlock: 0
+        fromBlock: 4460000
     }, function(error, event){})
     .on('data', async function(event){
          //console.log(event.blockNumber); 
         let ipfsHash =  this.Utils.toAscii(event.returnValues.ipfsHash);
         let data = await this.getDataIPFS(ipfsHash, event.blockNumber);
         const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
-        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, that.Utils.sha3(ipfsHash)).call() 
+        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(this.props.listID, that.Utils.sha3(ipfsHash)).call() 
         let itemStatus = stage==1?'In Application':stage==2?'In Challenge':stage==3?'In Registry':'New'
-        let isOwner = await this.contracts.BBUnOrderedTCR.methods.isOwnerItem(10, event.returnValues.itemHash).call();
+        let isOwner = await this.contracts.BBUnOrderedTCR.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash).call();
 
 
         if(data) {
@@ -239,7 +239,7 @@ class UnorderTCRListing extends React.Component {
       }
   }
   displayUpdateButton = (item) => {
-    let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner, stage : item.stage}
+    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, extraData: item.name, status: item.status, isOwner : item.isOwner, stage : item.stage}
     let btnColor = "primary"
     if(componentPros.isOwner) {
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>
@@ -250,7 +250,7 @@ class UnorderTCRListing extends React.Component {
   }
 
   displayActionButton = (item) => {
-    let componentPros = {itemHash:item.itemHash, extraData: item.name, status: item.status}
+    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, extraData: item.name, status: item.status}
 
     var dialogcomponent = ''
     var dialogtitle = ''
@@ -267,7 +267,7 @@ class UnorderTCRListing extends React.Component {
     if(componentPros.status == 'In Challenge'){
       dialogcomponent = Voting
       dialogtitle = 'Voting'
-      btnColor = ""
+      btnColor = "default"
     }
 
     

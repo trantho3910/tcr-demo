@@ -48,7 +48,7 @@ class Apply extends Component {
             'submiting': true
         });
 
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.componentPros.listID).call();
         console.log('minStake',paramTCR.minStake);
         
         var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
@@ -65,7 +65,7 @@ class Apply extends Component {
         console.log('dataHash', dataHash);   
 
         if(allowance > paramTCR.minStake && bboAmount >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
+            that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
             });
@@ -87,7 +87,7 @@ class Apply extends Component {
             that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
             setTimeout(function () {
                                             
-                that.BBUnOrderedTCRInstance.methods.apply(10, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });

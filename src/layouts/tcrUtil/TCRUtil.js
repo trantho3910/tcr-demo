@@ -41,7 +41,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        that.BBUnOrderedTCRInstance.methods.updateStatus(10, this.props.componentPros.itemHash).send();
+        that.BBUnOrderedTCRInstance.methods.updateStatus(this.props.componentPros.listID, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });
@@ -55,7 +55,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        that.BBUnOrderedTCRInstance.methods.initExit(10, this.props.componentPros.itemHash).send();
+        that.BBUnOrderedTCRInstance.methods.initExit(this.props.componentPros.listID, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });
@@ -70,7 +70,7 @@ class TCRUtil extends Component {
         this.setState({
             'submiting': true
         });
-        that.BBUnOrderedTCRInstance.methods.finalizeExit(10, this.props.componentPros.itemHash).send();
+        that.BBUnOrderedTCRInstance.methods.finalizeExit(this.props.componentPros.listID, this.props.componentPros.itemHash).send();
         that.setState({
             'submiting': false
         });

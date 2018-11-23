@@ -83,8 +83,7 @@ class ProgramInner extends Component {
   }
 
   async getParams() {
-
-    let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+    let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.listID).call();
     this.context.paramTCR = paramTCR;
   }
   
@@ -146,7 +145,7 @@ class ProgramInner extends Component {
   }
   componentDidMount(){
     let that = this;
-     this.contracts.BBTCRHelper.methods.getListParams(10).call().then(function(rs){
+     this.contracts.BBTCRHelper.methods.getListParams(this.props.listID).call().then(function(rs){
         console.log(rs)
         that.setState({listParams: rs});
 
@@ -186,12 +185,12 @@ class ProgramInner extends Component {
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-          <h1 className = "newstype">Bigbom Ads Expert List</h1>
+          <h1 className = "newstype">{'{' + 'this.state.listName' + '}'}</h1>
           </div>
-          <h3>Become an expert &nbsp;&nbsp;&nbsp;&nbsp;
-          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
+          <h3>Join this list? &nbsp;&nbsp;&nbsp;&nbsp;
+          <Button size="small" onClick={this.handleClickOpen.bind(this, {listID:this.props.listID}, RegisterItem, 'Register Form')} color = "primary" variant="outlined">Register</Button>
           </h3>
-          <UnorderTCRListing></UnorderTCRListing>
+          <UnorderTCRListing listID={this.props.listID}></UnorderTCRListing>
           <br></br>
           {this.displayParams()}
           <SimpleDialogWrapped 

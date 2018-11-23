@@ -12,8 +12,8 @@ export default () => (
         <React.Fragment>
         <Navigation />
         <Switch>
-            <Route exact path="/" component={ProgramContainer} />
-            <Route exact path="/manager" component={ManagerPanel} />    
+            <Route exact path="/" component={ManagerPanel} />
+            <Route exact path="/listing/:listID" component={ProgramContainer} />    
             <Route path='/pages/:page' component={Introduce}/>
         </Switch>
         </React.Fragment>

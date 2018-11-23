@@ -176,17 +176,27 @@ class Manager extends Component {
     else
       return 'Loading...'
   }
+  displayCreateBtn(){
+    if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+    return(
+        <div>
+          <h3>Create New List &nbsp;&nbsp;&nbsp;&nbsp;
+            <Button size="small" onClick={this.handleClickOpen.bind(this, {}, NewList, 'New List Form')} color = "primary" variant="outlined">New</Button>
+          </h3>
+        </div>
+      )
+    else
+      return ''
+  }
   render() {
   
     return (
       <main className="container">
         <div className="">
           <div className="pure-u-1-1 header">
-          <h1 className = "newstype">Ads Expert List Manager</h1>
+          <h1 className = "newstype">Listing Demo</h1>
           </div>
-          <h3>Create New List &nbsp;&nbsp;&nbsp;&nbsp;
-          <Button size="small" onClick={this.handleClickOpen.bind(this, {}, NewList, 'New List Form')} color = "primary" variant="outlined">New</Button>
-          </h3>
+          {this.displayCreateBtn()}
           <ListIDPanel></ListIDPanel>
           <SimpleDialogWrapped 
          open={this.state.open} 

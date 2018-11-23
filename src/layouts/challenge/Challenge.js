@@ -32,16 +32,6 @@ class Challenge extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    // async handleGetStage() {
-    //     let itemHash = this.props.componentPros.itemHash
-    //     console.log('itemHash ',itemHash);
-    //     let stage = await this.contracts.BBTCRHelper.methods.getItemStage(10, this.Utils.sha3(itemHash)).call();
-    //     console.log('stage ', stage);
-
-    //     let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
-    //     console.log('minStake',paramTCR);
-
-    // }
 
     async handleChallenge() {
         console.log('handleChallenge');
@@ -51,7 +41,7 @@ class Challenge extends Component {
         this.setState({
             'submiting': true
         });
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(10).call();
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.componentPros.listID).call();
         console.log('minStake',paramTCR.minStake);
 
         var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
@@ -65,7 +55,7 @@ class Challenge extends Component {
         console.log('dataHash', dataHash);   
 
         if(allowance >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.challenge(10, itemHash, that.Utils.toHex(dataHash)).send();
+            that.BBUnOrderedTCRInstance.methods.challenge(this.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
             });
@@ -88,7 +78,7 @@ class Challenge extends Component {
         setTimeout(function () {
             that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
             setTimeout(function () {      
-                that.BBUnOrderedTCRInstance.methods.challenge(10, itemHash, that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.challenge(this.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });

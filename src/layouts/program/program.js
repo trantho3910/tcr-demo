@@ -6,14 +6,14 @@ import ProgramInner from './programInner'
 
 class Program extends Component {
   constructor(props, context) {
-    super(props)   
+    super(props)
   }
   
   render() {
     
     return (
       <ProgramLoading>
-         <ProgramInner />
+         <ProgramInner listID={this.props.match.params.listID}/>
       </ProgramLoading>
     )
   }

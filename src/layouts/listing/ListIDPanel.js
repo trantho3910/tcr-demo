@@ -221,9 +221,6 @@ class ListIDPanel extends React.Component {
     this.setState({ page });
   };
   handleClickOpen = (componentPros, dialogcomponent, dialogtitle) => {
-    if(dialogcomponent == OwnerTool) {
-
-    }
     this.setState({ dialogcomponent: dialogcomponent, dialogtitle: dialogtitle, componentPros: componentPros });
     this.setState({open:true})
   };

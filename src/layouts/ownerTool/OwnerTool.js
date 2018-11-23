@@ -47,7 +47,7 @@ class OwnerTool extends Component {
     componentDidMount(){
         let that = this;
          this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call().then(function(rs){
-            //console.log(rs)
+            console.log(rs)
             that.setState({listParams: rs});
     
           });

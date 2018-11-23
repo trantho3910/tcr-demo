@@ -280,7 +280,7 @@ class ListIDPanel extends React.Component {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
-                  <TableRow key={row.itemHash}>
+                  <TableRow key={row.listID}>
                     <TableCell component="th" scope="row">
                     <b>{row.name}</b>
                     </TableCell>

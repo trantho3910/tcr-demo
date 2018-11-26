@@ -1,5 +1,3 @@
-import BBOHoldingContract from './../build/contracts/BBOHoldingContract.json'
-import TutorialToken from './../build/contracts/BBOTest.json'
 import BBTCRHelper from './../build/contracts/BBTCRHelper.json'
 import BBUnOrderedTCR from './../build/contracts/BBUnOrderedTCR.json'
 import BBVoting from './../build/contracts/BBVoting.json'
@@ -20,8 +18,6 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    BBOHoldingContract,
-    TutorialToken,
     BBTCRHelper,
     BBUnOrderedTCR,
     BBVotingHelper,

@@ -5,7 +5,7 @@ const AdminUpgradeabilityProxy = artifacts.require("AdminUpgradeabilityProxy");
 var BBExpertHash = artifacts.require("./BBExpertHash.sol");
 
 module.exports = function (deployer) {
-    if (deployer.network_id == 3) {
+    if (deployer.network_id == 4) {
 
         var admin = '0x83e5353fc26643c29b041a3b692c6335c97a9aed';
         var adminProxy = '0xA867a6a820928C64FfE3e30166481Ec526D38BC5';

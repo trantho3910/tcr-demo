@@ -33,7 +33,7 @@ class RegisterItem extends Component {
     }
 
     async updateParams () {
-        console.log('updateParams');
+        console.log('register');
         if (this.state['submiting'])
             return;
         var that = this;

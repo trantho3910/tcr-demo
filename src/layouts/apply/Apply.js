@@ -108,8 +108,10 @@ class Apply extends Component {
         return (
             <div>
             <h3 className = "newstype">You are about apply to ITEM</h3>
-            <p>IPFS: {this.props.componentPros.extraData}</p>
-            <p>ItemHash: {this.props.componentPros.itemHash}</p>
+            <p>Name: {this.props.componentPros.name}</p>
+            <p>Email: {this.props.componentPros.email}</p>
+            <p>Address: {this.props.componentPros.address}</p>
+            <p>Phone: {this.props.componentPros.phone}</p>
             <TextField
               label="Stake BBO Amount"
               value={this.state.bboAmount}

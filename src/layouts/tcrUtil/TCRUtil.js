@@ -92,8 +92,10 @@ class TCRUtil extends Component {
         return (
             <div className="container-fix-600">
              <h3 className = "newstype">You are about manager to ITEM</h3>
-            <p>IPFS: {this.props.componentPros.extraData}</p>
-            <p>ItemHash: {this.props.componentPros.itemHash}</p>
+            <p>Name: {this.props.componentPros.name}</p>
+            <p>Email: {this.props.componentPros.email}</p>
+            <p>Address: {this.props.componentPros.address}</p>
+            <p>Phone: {this.props.componentPros.phone}</p>
             <p><Button variant="outlined" color="secondary"  onClick={this.updateStatus}>Update Status</Button>
             </p>
             <p><Button variant="outlined" color="secondary" onClick={this.updateInitExit}>Init Exit</Button>

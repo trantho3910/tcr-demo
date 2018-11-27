@@ -107,7 +107,7 @@ class Voting extends Component {
         });
         let pollID = this.state['pollID'];
         let choice = this.state['choice'];
-        let salt   = this.state['salt'];
+        let salt   = this.state['saltPassword'];
 
         if(choice == null) {
             alert('Support or Not ?');

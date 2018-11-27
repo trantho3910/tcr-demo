@@ -40,7 +40,6 @@ class Apply extends Component {
       };
     async handleApply() {
 
-        console.log('handleApply');
         if (this.state['submiting'])
             return;
         var that = this;
@@ -48,32 +47,41 @@ class Apply extends Component {
             'submiting': true
         });
 
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.componentPros.listID).call();
-        console.log('minStake',paramTCR.minStake);
-        
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call();
+        let minStake = Number(this.Utils.fromWei(paramTCR.minStake,'ether'));
+        console.log('minStake', minStake);
+
+
         var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
+        allowance = Number (this.Utils.fromWei(allowance,'ether'));
         console.log('allowance',allowance);
 
-        let bboAmount = that.state['bboAmount'];
-        bboAmount = this.Utils.toWei(bboAmount, 'ether');
+        let bboAmount = Number(that.state['bboAmount']);
         console.log('bboAmount',bboAmount);
+      
 
         let itemHash = this.props.componentPros.itemHash
         let dataHash = this.props.componentPros.extraData
-
+        if(dataHash == null) {
+            dataHash = 'data';
+        }
         console.log('itemHash', itemHash);
-        console.log('dataHash', dataHash);   
+        console.log('dataHash', dataHash);
+        let hh = 3;   
+        console.log(typeof allowance);
 
-        if(allowance > paramTCR.minStake && bboAmount >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
+        if(allowance > minStake && bboAmount >= minStake) {
+            console.log('do Apply');
+            that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, this.Utils.toWei(bboAmount.toString(), 'ether'),itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
             });
             return;
         }
-
-        if(bboAmount < paramTCR.minStake) {
-            alert('BBO Amount must be greater 100');
+        console.log('bboAmount : ', bboAmount);
+        console.log('minStake : ',minStake);
+        if(bboAmount < minStake) {
+            alert('BBO Amount must be greater ' + minStake);
             that.setState({
                 'submiting': false
             });

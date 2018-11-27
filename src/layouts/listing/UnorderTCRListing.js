@@ -191,7 +191,7 @@ class UnorderTCRListing extends React.Component {
   componentDidMount() {
     var that = this;
     this.contracts.BBExpertHash.events.SavingItemData({
-        fromBlock: 4460000
+        fromBlock: 3000000
     }, function(error, event){})
     .on('data', async function(event){
          //console.log(event.blockNumber); 

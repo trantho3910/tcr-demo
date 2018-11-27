@@ -45,7 +45,7 @@ class Voting extends Component {
       let that = this;
       return BBUnOrderedTCRInstanceWeb3.getPastEvents('Challenge', 
                 {filter:{listID:this.props.componentPros.listID, itemHash: that.props.componentPros.itemHash},
-                 fromBlock:4464719,
+                 fromBlock:3000000,
                  toBlock: 'latest' }, function(events, err){}
                  ).then(function(events){
                     console.log(events)

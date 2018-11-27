@@ -73,6 +73,7 @@ class ListIDPanel extends React.Component {
 
   componentDidMount() {
       //console.log(this.context.drizzle.web3.eth.Contract);
+      console.log('ho')
       var that = this;
       this.contracts.BBTCRHelper.events.CreateListID({
         //  filter : {owner : this.props.accounts[0]},
@@ -142,7 +143,7 @@ class ListIDPanel extends React.Component {
   displayUpdateButton = (item) => {
     let componentPros = {name:item.name, listID: item.listID, token: item.token, tokenName : item.tokenName}
     let btnColor = "primary"
-    if(this.props.accounts[0] === '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+    if(this.props.accounts[0] === '0xb10ca39DFa4903AE057E8C26E39377cfb4989551')
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, UpdateToken, 'Update Token')} variant="outlined" color={btnColor}>
         Update Token
       </Button>
@@ -155,7 +156,7 @@ class ListIDPanel extends React.Component {
 
     let componentPros = {name:item.name, listID: item.listID, token: item.token}
       var btnColor = "primary" 
-      if(this.props.accounts[0] === '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+      if(this.props.accounts[0] === '0xb10ca39DFa4903AE057E8C26E39377cfb4989551')
       return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, OwnerTool, "Update Prams")} variant="outlined" color={btnColor}>
           Update Params
         </Button>

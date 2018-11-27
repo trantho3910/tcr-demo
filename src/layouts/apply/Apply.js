@@ -32,6 +32,12 @@ class Apply extends Component {
     async getParams () {
     }
 
+    async getERC20Instance(token) {
+      return await new this.context.drizzle.web3.eth.Contract(this.BBOInstance.abi, token, {
+          from: this.props.accounts[0], // default from address
+          gasPrice: '20000000000' // default gas price in wei ~20gwei
+        });
+    }
   
     handleChange = name => event => {
         this.setState({
@@ -48,10 +54,14 @@ class Apply extends Component {
             'submiting': true
         });
 
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.componentPros.listID).call();
+      
+
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call();
         console.log('minStake',paramTCR.minStake);
-        
-        var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
+        let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
+        let ERCIntance = await this.getERC20Instance(token);
+
+        var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
         console.log('allowance',allowance);
 
         let bboAmount = that.state['bboAmount'];
@@ -73,29 +83,40 @@ class Apply extends Component {
         }
 
         if(bboAmount < paramTCR.minStake) {
-            alert('BBO Amount must be greater 100');
+            alert('Token Amount must be greater 100');
             that.setState({
                 'submiting': false
             });
             return;
         }
-        
-         
-        this.BBOInstance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
-        setTimeout(function () {
-            
-            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
+        console.log(allowance)
+        if(allowance > 0){
+          ERCIntance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
+          setTimeout(function () {
+              
+              ERCIntance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei(new that.Utils.BN(Math.pow(2,52)), 'ether')).send();
+              setTimeout(function () {
+                                              
+                  that.BBUnOrderedTCRInstance.methods.apply(that.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
+                  that.setState({
+                      'submiting': false
+                  });
+
+              }, 10000);
+          }, 5000);
+
+        }else{
+
+            ERCIntance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei( new that.Utils.BN(Math.pow(2,52)), 'ether')).send();
             setTimeout(function () {
                                             
-                that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.apply(that.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });
 
-            }, 10000);
-        }, 5000);
-
-
+            }, 5000);
+        }
     }
 
     render() {
@@ -113,7 +134,7 @@ class Apply extends Component {
             <p>Address: {this.props.componentPros.address}</p>
             <p>Phone: {this.props.componentPros.phone}</p>
             <TextField
-              label="Stake BBO Amount"
+              label="Stake Token Amount"
               value={this.state.bboAmount}
               onChange={this.handleChange('bboAmount')}
               type="number"

@@ -62,10 +62,10 @@ class OwnerTool extends Component {
             return (
               <div>
               <p>Current Application Duration: {this.state.listParams.applicationDuration} (s)</p>
-              <p>Current Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
+              <p>Current Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} Token</p>
               <p>Current Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
               <p>Current Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
-              <p>Current Init Quorum: {this.state.listParams.initQuorum} (s)</p>
+              <p>Current Init Quorum: {this.state.listParams.initQuorum} (%)</p>
               <p>Current Exit Application Duration: {this.state.listParams.exitDuration} (s)</p>
               </div>
               )

@@ -99,7 +99,7 @@ class RegisterItem extends Component {
             <input className="input-bbo" key="phone" type="text" name="phone" placeholder = "Phone Number" onChange={this.handleInputChange} />
             </p>
             <p>
-            <input className="input-bbo" key="linkedin" type="text" name="linkedin" placeholder = "Linkedin Profile" onChange={this.handleInputChange} />
+            <input className="input-bbo" key="linkedin" type="text" name="linkedin" placeholder = "Website" onChange={this.handleInputChange} />
             </p>
             <p><button key="submit" className="sub-item-button-submit" type="button" onClick={this.updateParams}>Register</button>
             </p>

@@ -107,7 +107,23 @@ class Voting extends Component {
         });
         let pollID = this.state['pollID'];
         let choice = this.state['choice'];
-        let salt   = this.state['salt'];
+        let salt   = this.state['saltPassword'];
+
+        if(choice == null) {
+            alert('Support or Not ?');
+            this.setState({
+                'submiting': false
+            });
+            return;
+        };
+
+        if(salt == null) {
+            alert('Input Password');
+            this.setState({
+                'submiting': false
+            });
+            return;
+        };
 
         await this.VotingInstance.methods.revealVote(pollID, choice, salt).send();
         this.setState({
@@ -127,6 +143,8 @@ class Voting extends Component {
         let pollID = this.state['pollID'];
         let choice = this.state['choice'];
         let salt   = this.state.saltPassword
+
+        
 
         console.log('choice',choice);
         console.log('salt',salt);
@@ -316,7 +334,7 @@ class Voting extends Component {
         return (
             <div>
             <h3 className = "newstype">Stage : {this.state.votingState}</h3>
-            <p>Item Hash: {this.props.componentPros.itemHash} </p>
+            <p>Name: {this.props.componentPros.name} </p>
             <p>Poll ID: {this.state.pollID} </p>
             <p>Now: {this.displayTime(0)} </p>
             <p>Commit Enddate: {this.displayTime(this.state.commitEndate)} </p>

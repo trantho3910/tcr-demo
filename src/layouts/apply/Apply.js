@@ -46,7 +46,6 @@ class Apply extends Component {
       };
     async handleApply() {
 
-        console.log('handleApply');
         if (this.state['submiting'])
             return;
         var that = this;
@@ -57,9 +56,12 @@ class Apply extends Component {
       
 
         let paramTCR = await this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call();
+        let minStake = paramTCR.minStake;
         console.log('minStake',paramTCR.minStake);
         let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
         let ERCIntance = await this.getERC20Instance(token);
+
+        console.log('Token address ',token);
 
         var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
         console.log('allowance',allowance);
@@ -67,14 +69,18 @@ class Apply extends Component {
         let bboAmount = that.state['bboAmount'];
         bboAmount = this.Utils.toWei(bboAmount, 'ether');
         console.log('bboAmount',bboAmount);
+      
 
         let itemHash = this.props.componentPros.itemHash
         let dataHash = this.props.componentPros.extraData
-
+        if(dataHash == null) {
+            dataHash = 'data';
+        }
         console.log('itemHash', itemHash);
-        console.log('dataHash', dataHash);   
+        console.log('dataHash', dataHash);
 
-        if(allowance > paramTCR.minStake && bboAmount >= paramTCR.minStake) {
+        if(allowance > minStake && bboAmount >= minStake) {
+            console.log('do Apply');
             that.BBUnOrderedTCRInstance.methods.apply(this.props.componentPros.listID, bboAmount,itemHash, that.Utils.toHex(dataHash)).send();
             that.setState({
                 'submiting': false
@@ -82,8 +88,8 @@ class Apply extends Component {
             return;
         }
 
-        if(bboAmount < paramTCR.minStake) {
-            alert('Token Amount must be greater 100');
+        if(bboAmount < minStake) {
+            alert('Token Amount must be greater ' + this.Utils.fromWei(minStake, 'ether'));
             that.setState({
                 'submiting': false
             });

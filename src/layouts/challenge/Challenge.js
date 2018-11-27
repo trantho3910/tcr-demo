@@ -27,7 +27,12 @@ class Challenge extends Component {
       this.BBOInstance = this.contracts.BBOTest;
     
     }
-
+    async getERC20Instance(token) {
+      return await new this.context.drizzle.web3.eth.Contract(this.BBOInstance.abi, token, {
+          from: this.props.accounts[0], // default from address
+          gasPrice: '20000000000' // default gas price in wei ~20gwei
+        });
+    }
     handleInputChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
@@ -41,10 +46,13 @@ class Challenge extends Component {
         this.setState({
             'submiting': true
         });
-        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParamsUnOrdered(this.props.componentPros.listID).call();
+        let paramTCR = await this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call();
         console.log('minStake',paramTCR.minStake);
+        let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
+    
+        let ERCIntance = await this.getERC20Instance(token);
 
-        var allowance = await this.BBOInstance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
+        var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
         console.log('allowance',allowance);
 
         
@@ -73,18 +81,29 @@ class Challenge extends Component {
 
                   return;
                 }
+         if(allowance > 0) {
+             ERCIntance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
+            setTimeout(function () {
+                ERCIntance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei(new that.Utils.BN(Math.pow(2,52)), 'ether')).send();
+                setTimeout(function () {      
+                    that.BBUnOrderedTCRInstance.methods.challenge(that.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
+                    that.setState({
+                        'submiting': false
+                    });
 
-        this.BBOInstance.methods.approve(this.BBUnOrderedTCRInstance.address, 0).send();
-        setTimeout(function () {
-            that.BBOInstance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei('1000000', 'ether')).send();
+                }, 10000);
+            }, 5000);
+        }else{
+            ERCIntance.methods.approve(that.BBUnOrderedTCRInstance.address, that.Utils.toWei(new that.Utils.BN(Math.pow(2,52)), 'ether')).send();
             setTimeout(function () {      
-                that.BBUnOrderedTCRInstance.methods.challenge(this.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
+                that.BBUnOrderedTCRInstance.methods.challenge(that.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
                 that.setState({
                     'submiting': false
                 });
 
-            }, 10000);
-        }, 5000);
+            }, 5000);
+        }
+       
 
 
 

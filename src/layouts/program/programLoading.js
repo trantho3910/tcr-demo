@@ -52,14 +52,13 @@ class ProgramLoading extends Component {
     if (this.props.loadingComp) {
       return this.props.loadingComp
     }
-
+    console.log(this.props.accounts[0], this.props.drizzleStatus.initialized)
     return (
        <main className="container loading-screen">
        <div className="pure-g">
        <div className="pure-u-1-1 header">
-      <h1>Oops, you’re on the wrong network</h1>
-      <h2>Simply open MetaMask and switch over to the Ropsten Ethereum Network.</h2>
-      <img src={errorRopsten} width = "400"/> 
+      <h2>Loading ... !please make sure you are on Rinkeby Ethereum Network.</h2>
+      
       </div>
     </div>
     </main>

@@ -53,6 +53,12 @@ class Voting extends Component {
                     that.setState({pollID: events[0].returnValues.pollID});
                  });
     }
+    async getERC20Instance(token) {
+      return await new this.context.drizzle.web3.eth.Contract(this.BBOInstance.abi, token, {
+          from: this.props.accounts[0], // default from address
+          gasPrice: '20000000000' // default gas price in wei ~20gwei
+        });
+    }
     async getReward(){
       let reward = this.BBUnOrderedTCRInstance.methods.voterReward(this.props.accounts[0], this.state.pollID).send();
       if(reward!= this.state.voterReward)
@@ -103,6 +109,22 @@ class Voting extends Component {
         let choice = this.state['choice'];
         let salt   = this.state['salt'];
 
+        if(choice == null) {
+            alert('Support or Not ?');
+            this.setState({
+                'submiting': false
+            });
+            return;
+        };
+
+        if(salt == null) {
+            alert('Input Password');
+            this.setState({
+                'submiting': false
+            });
+            return;
+        };
+
         await this.VotingInstance.methods.revealVote(pollID, choice, salt).send();
         this.setState({
             'submiting': false
@@ -116,19 +138,35 @@ class Voting extends Component {
         this.setState({
             'submiting': true
         });
+        let that = this;
         let bboAmount = this.state['bboAmountVote'];
         let pollID = this.state['pollID'];
         let choice = this.state['choice'];
         let salt   = this.state.saltPassword
 
+        
+
         console.log('choice',choice);
         console.log('salt',salt);
 
+        let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
+    
+        let ERCIntance = await this.getERC20Instance(token);
 
+        var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.VotingInstance.address).call();
+
+        console.log(allowance)
+        
         let secretHash = this.Utils.soliditySha3(choice, salt);
         bboAmount = this.Utils.toWei(bboAmount, 'ether');
+        if(allowance == 0){
+          ERCIntance.methods.approve(this.VotingInstance.address, this.Utils.toWei(new this.Utils.BN(Math.pow(2,52)), 'ether')).send();
+          setTimeout(function () {
+             that.VotingInstance.methods.commitVote(pollID, secretHash, bboAmount).send();
+          }, 5000);
+        }else
+        this.VotingInstance.methods.commitVote(pollID, secretHash, bboAmount).send();
 
-        await this.VotingInstance.methods.commitVote(pollID, secretHash, bboAmount).send();
         this.setState({
             'submiting': false
         });
@@ -296,7 +334,7 @@ class Voting extends Component {
         return (
             <div>
             <h3 className = "newstype">Stage : {this.state.votingState}</h3>
-            <p>Item Hash: {this.props.componentPros.itemHash} </p>
+            <p>Name: {this.props.componentPros.name} </p>
             <p>Poll ID: {this.state.pollID} </p>
             <p>Now: {this.displayTime(0)} </p>
             <p>Commit Enddate: {this.displayTime(this.state.commitEndate)} </p>

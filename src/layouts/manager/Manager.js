@@ -150,7 +150,7 @@ class Manager extends Component {
   }
   displayParams =() => {
     if(this.state.listParams){
-       if(this.props.accounts[0] == '0x83e5353fc26643c29b041a3b692c6335c97a9aed')
+       if(this.props.accounts[0] == '0xb10ca39DFa4903AE057E8C26E39377cfb4989551')
         return(
           <div>
           <h3>Params</h3>
@@ -177,7 +177,8 @@ class Manager extends Component {
       return 'Loading...'
   }
   displayCreateBtn(){
-    if(this.props.accounts[0] == '0x83e5353fC26643c29B041A3b692c6335c97A9aed')
+    console.log(this.props.accounts[0])
+    if(this.props.accounts[0] == '0xb10ca39DFa4903AE057E8C26E39377cfb4989551')
     return(
         <div>
           <h3>Create New List &nbsp;&nbsp;&nbsp;&nbsp;

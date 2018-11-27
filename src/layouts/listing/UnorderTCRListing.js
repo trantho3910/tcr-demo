@@ -190,8 +190,9 @@ class UnorderTCRListing extends React.Component {
 
   componentDidMount() {
     var that = this;
+
     this.contracts.BBExpertHash.events.SavingItemData({
-        fromBlock: 3000000
+        fromBlock: 3060000
     }, function(error, event){})
     .on('data', async function(event){
          //console.log(event.blockNumber); 
@@ -203,7 +204,7 @@ class UnorderTCRListing extends React.Component {
         let isOwner = await this.contracts.BBTCRHelper.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash, this.props.accounts[0]).call();
 
         if(data) {
-          let obj = {name: data.fullName, address:data.address, phone : data.phone, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
+          let obj = {creator:event.returnValues.sender,  ipfsHash:ipfsHash, name: data.fullName, address:data.address, phone : data.phone, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
           this.items.push(obj);
           this.setState({rows: this.items})
         }
@@ -235,7 +236,7 @@ class UnorderTCRListing extends React.Component {
       }
   }
   displayUpdateButton = (item) => {
-    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
+    let componentPros = {extraData:item.ipfsHash ,listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
     let btnColor = "primary"
     if(componentPros.isOwner) {
   	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>
@@ -246,11 +247,13 @@ class UnorderTCRListing extends React.Component {
   }
 
   displayActionButton = (item) => {
-    let componentPros = {listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
-
+    let componentPros = {extraData:item.ipfsHash , listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
+    var disabled = true
     var dialogcomponent = ''
     var dialogtitle = ''
     var btnColor = "primary"
+    if(item.creator == this.props.accounts[0])
+      disabled = false
     if(componentPros.status == 'New'){
       dialogcomponent = Apply
       dialogtitle = 'Apply'
@@ -259,15 +262,19 @@ class UnorderTCRListing extends React.Component {
       dialogcomponent = Challenge
       dialogtitle = 'Challenge'
       btnColor = "secondary"
+      disabled = true
+      if(item.creator != this.props.accounts[0])
+        disabled = false
     }
     if(componentPros.status == 'In Challenge'){
       dialogcomponent = Voting
       dialogtitle = 'Voting'
       btnColor = "default"
+      disabled = false
     }
 
     
-  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
+  	return (<Button size="small" disabled={disabled} onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
         {dialogtitle}
       </Button>
       )
@@ -355,4 +362,4 @@ const mapStateToProps = state => {
     }
 }
 export default withStyles(styles)(drizzleConnect(UnorderTCRListing, mapStateToProps));
-export {SimpleDialogWrapped}
+export {SimpleDialogWrapped, TablePaginationActionsWrapped}

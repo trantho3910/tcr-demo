@@ -39,7 +39,7 @@ class Challenge extends Component {
 
 
     async handleChallenge() {
-        console.log('handleChallenge');
+        //console.log('handleChallenge');
         if (this.state['submiting'])
             return;
         var that = this;
@@ -47,23 +47,23 @@ class Challenge extends Component {
             'submiting': true
         });
         let paramTCR = await this.contracts.BBTCRHelper.methods.getListParams(this.props.componentPros.listID).call();
-        console.log('minStake',paramTCR.minStake);
+        //console.log('minStake',paramTCR.minStake);
         let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
     
         let ERCIntance = await this.getERC20Instance(token);
 
         var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.BBUnOrderedTCRInstance.address).call();
-        console.log('allowance',allowance);
+        //console.log('allowance',allowance);
 
         
         let itemHash = this.props.componentPros.itemHash
-        let dataHash = this.props.componentPros.extraData
+        let dataHash = this.props.componentPros.ipfsHash
 
-        console.log('itemHash', itemHash);
-        console.log('dataHash', dataHash);   
+        //console.log('itemHash', itemHash);
+        //console.log('dataHash', dataHash);   
 
         if(allowance >= paramTCR.minStake) {
-            that.BBUnOrderedTCRInstance.methods.challenge(this.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send();
+            that.BBUnOrderedTCRInstance.methods.challenge(this.props.componentPros.listID, itemHash, that.Utils.toHex(dataHash)).send({from:that.props.accounts[0]});
             that.setState({
                 'submiting': false
             });
@@ -74,7 +74,7 @@ class Challenge extends Component {
 
                 }, (error, event) => {})
                 .on('data', (event) => {
-                    console.log(event.returnValues);
+                    //console.log(event.returnValues);
                 })
                 .on('changed', (event) => console.log(event))
                 .on('error', (error) => console.log(error));

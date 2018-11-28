@@ -189,7 +189,7 @@ class ProgramInner extends Component {
           <div>
           <h3>Params</h3>
            <p>Application Duration: {this.state.listParams.applicationDuration} (s)</p>
-          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
+          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} SAT</p>
           <p>Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
           <p>Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
           <p>Set Prams TCR</p>
@@ -201,7 +201,7 @@ class ProgramInner extends Component {
           <div>
           <h3>Params</h3>
           <p>Application Duration: {this.state.listParams.applicationDuration} (s)</p>
-          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} BBO</p>
+          <p>Application Min Stake: {this.Utils.fromWei(this.state.listParams.minStake,'ether' )} SAT</p>
           <p>Commit Voting Duration: {this.state.listParams.commitDuration} (s)</p>
           <p>Reveal Voting Duration: {this.state.listParams.revealDuration} (s)</p>
           </div>

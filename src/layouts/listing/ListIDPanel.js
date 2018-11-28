@@ -65,22 +65,22 @@ class ListIDPanel extends React.Component {
         const data = response.json()
         return data;
       } catch (e) {
-        console.log('error ', e);
+        //console.log('error ', e);
         return null;
       }
 
     }
 
   componentDidMount() {
-      //console.log(this.context.drizzle.web3.eth.Contract);
-      console.log('ho')
+      ////console.log(this.context.drizzle.web3.eth.Contract);
+      //console.log('ho')
       var that = this;
       this.contracts.BBTCRHelper.events.CreateListID({
         //  filter : {owner : this.props.accounts[0]},
           fromBlock: 0
       }, function(error, event){})
       .on('data', async function(event){
-         // console.log(event.returnValues); 
+         // //console.log(event.returnValues); 
          let ipfsHash =  this.Utils.toAscii(event.returnValues.nameHash);
          let data = await this.getDataIPFS(ipfsHash);
          const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
@@ -112,7 +112,7 @@ class ListIDPanel extends React.Component {
      return new Promise(async(resolve, reject) => {
       tokenContract.methods.name.call().call(function(error ,result){
         if(error) {
-            console.log('error :' + error);
+            //console.log('error :' + error);
             resolve(null);
         } else {
            resolve(result);

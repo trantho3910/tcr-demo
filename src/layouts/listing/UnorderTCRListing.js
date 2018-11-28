@@ -23,7 +23,7 @@ import Apply from '../apply/Apply'
 import Challenge from '../challenge/Challenge'
 import Voting from '../voting/Voting'
 import TCRUtil from '../tcrUtil/TCRUtil'
-
+import ItemRow from './ItemRow'
 
 const styles = theme => ({
   root: {
@@ -171,49 +171,21 @@ class UnorderTCRListing extends React.Component {
     this.contracts = context.drizzle.contracts;
     this.Utils = context.drizzle.web3.utils; 
     this.count = 0; 
-
+    this.web3 = context.drizzle.web3
 
   }
 
-    getDataIPFS = async (ipfsHash) => {
-      try {
-        const url = 'https://cloudflare-ipfs.com/ipfs/' + ipfsHash;
-        const response = await fetch(url)        
-        const data = response.json()
-        return data;
-      } catch (e) {
-        console.log('error ', e);
-        return null;
-      }
-
-    }
-
   componentDidMount() {
-    var that = this;
-
-    this.contracts.BBExpertHash.events.SavingItemData({
+    let that = this;
+    const BBExpertHashWeb3 = new this.web3.eth.Contract(this.contracts.BBExpertHash.abi, this.contracts.BBExpertHash.address);
+    return BBExpertHashWeb3.getPastEvents('SavingItemData', 
+    {
         fromBlock: 3060000
     }, function(error, event){})
-    .on('data', async function(event){
-         //console.log(event.blockNumber); 
-        let ipfsHash =  this.Utils.toAscii(event.returnValues.ipfsHash);
-        let data = await this.getDataIPFS(ipfsHash, event.blockNumber);
-        const res = await this.context.drizzle.web3.eth.getBlock(event.blockNumber);
-        let stage = await this.contracts.BBTCRHelper.methods.getItemStage(this.props.listID, that.Utils.sha3(ipfsHash)).call() 
-        let itemStatus = stage==1?'In Application':stage==2?'In Challenge':stage==3?'In Registry':'New'
-        let isOwner = await this.contracts.BBTCRHelper.methods.isOwnerItem(this.props.listID, event.returnValues.itemHash, this.props.accounts[0]).call();
-
-        if(data) {
-          let obj = {creator:event.returnValues.sender,  ipfsHash:ipfsHash, name: data.fullName, address:data.address, phone : data.phone, email:data.email, status:itemStatus,  created: res.timestamp, itemHash : that.Utils.sha3(ipfsHash), isOwner : isOwner, stage : stage};
-          this.items.push(obj);
-          this.setState({rows: this.items})
-        }
-    }.bind(this))
-    .on('changed', function(event){
-        // remove event from local database
-    })
-    .on('error', console.error);
-
+    .then(async function(events){
+        that.items = events.map(item => item.returnValues);        
+        that.setState({rows: that.items})
+    });
    
   }
   
@@ -228,57 +200,7 @@ class UnorderTCRListing extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
-  displayTime(time){
-      if(time>0){
-       return new Date(time*1000).toISOString()
-      }else{
-          return new Date().toISOString()
-      }
-  }
-  displayUpdateButton = (item) => {
-    let componentPros = {extraData:item.ipfsHash ,listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
-    let btnColor = "primary"
-    if(componentPros.isOwner) {
-  	return (<Button size="small" onClick={this.handleClickOpen.bind(this, componentPros, TCRUtil, 'Update Item')} variant="outlined" color={btnColor}>
-        Update
-      </Button>
-      )
-    }
-  }
-
-  displayActionButton = (item) => {
-    let componentPros = {extraData:item.ipfsHash , listID:this.props.listID, itemHash:item.itemHash, name: item.name, status: item.status, email : item.email, address : item.address, phone : item.phone}
-    var disabled = true
-    var dialogcomponent = ''
-    var dialogtitle = ''
-    var btnColor = "primary"
-    if(item.creator == this.props.accounts[0])
-      disabled = false
-    if(componentPros.status == 'New'){
-      dialogcomponent = Apply
-      dialogtitle = 'Apply'
-    }
-    if(componentPros.status == 'In Application' || componentPros.status == 'In Registry'){
-      dialogcomponent = Challenge
-      dialogtitle = 'Challenge'
-      btnColor = "secondary"
-      disabled = true
-      if(item.creator != this.props.accounts[0])
-        disabled = false
-    }
-    if(componentPros.status == 'In Challenge'){
-      dialogcomponent = Voting
-      dialogtitle = 'Voting'
-      btnColor = "default"
-      disabled = false
-    }
-
-    
-  	return (<Button size="small" disabled={disabled} onClick={this.handleClickOpen.bind(this, componentPros, dialogcomponent, dialogtitle)} variant="outlined" color={btnColor}>
-        {dialogtitle}
-      </Button>
-      )
-  }
+  
   onModalClose = ()=> {
     this.setState({open:false})
   }
@@ -295,24 +217,15 @@ class UnorderTCRListing extends React.Component {
             <TableHead>
             <TableRow>
               <TableCell>Ads Expert</TableCell>
-              <TableCell>Created</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Stage</TableCell>
+              <TableCell>Time Remaining</TableCell>
               <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                 return (
-                  <TableRow key={row.itemHash}>
-                    <TableCell component="th" scope="row">
-                      Name: <b>{row.name}</b> <br/>
-                      Email: <b>{row.email}</b><br/>
-                      Address:<b>{row.address}</b>
-                    </TableCell>
-                    <TableCell>{this.displayTime(row.created)}</TableCell>
-                    <TableCell>{row.status}</TableCell>
-                    <TableCell>{this.displayUpdateButton(row)} {this.displayActionButton(row)}</TableCell>
-                  </TableRow>
+                  <ItemRow listID={this.props.listID} key={row.itemHash} item={row} handleClickOpen={this.handleClickOpen} />
                 );
               })}
               {emptyRows > 0 && (

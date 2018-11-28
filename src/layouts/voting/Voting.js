@@ -10,7 +10,7 @@ import Radio from '@material-ui/core/Radio';
 import TextField from '@material-ui/core/TextField';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-
+import Countdown from '../join/Countdown'
 
 const styles = theme => ({
   textField: {
@@ -25,9 +25,7 @@ class Voting extends Component {
       super(props)
       this.contracts = context.drizzle.contracts
       this.Utils = context.drizzle.web3.utils;  
-      this.handleGetPullID = this.handleGetPullID.bind(this);
       this.handleCommitVote = this.handleCommitVote.bind(this);
-      this.handleGetPollStage = this.handleGetPollStage.bind(this);
       this.claimReward = this.claimReward.bind(this);
       this.handeRevealVote = this.handeRevealVote.bind(this);
       var initialState = {bboAmount:0, submiting:false};
@@ -40,32 +38,31 @@ class Voting extends Component {
       this.handleChange = this.handleChange.bind(this);
 
     }
-    getPollID(){
-      const BBUnOrderedTCRInstanceWeb3 = new this.web3.eth.Contract(this.BBUnOrderedTCRInstance.abi, this.BBUnOrderedTCRInstance.address);
-      let that = this;
-      return BBUnOrderedTCRInstanceWeb3.getPastEvents('Challenge', 
-                {filter:{listID:this.props.componentPros.listID, itemHash: that.props.componentPros.itemHash},
-                 fromBlock:3000000,
-                 toBlock: 'latest' }, function(events, err){}
-                 ).then(function(events){
-                    console.log(events)
-                    if(events.length>0)
-                    that.setState({pollID: events[0].returnValues.pollID});
-                 });
+    componentDidMount = () => {
+       this.setState({
+            'pollStatus':this.props.componentPros.status.pollStatus,
+            'commitEndDate': this.props.componentPros.status.commitEndDate,
+            'revealEndDate': this.props.componentPros.status.revealEndDate,
+            'pollID':this.props.componentPros.status.pollID
+        });  
     }
+    
     async getERC20Instance(token) {
       return await new this.context.drizzle.web3.eth.Contract(this.BBOInstance.abi, token, {
           from: this.props.accounts[0], // default from address
           gasPrice: '20000000000' // default gas price in wei ~20gwei
         });
     }
-    async getReward(){
-      let reward = this.BBUnOrderedTCRInstance.methods.voterReward(this.props.accounts[0], this.state.pollID).send();
-      if(reward!= this.state.voterReward)
-        this.setState({voterReward:reward});
+    getReward(){
+      let that = this
+      return this.BBUnOrderedTCRInstance.methods.voterReward(this.props.accounts[0], this.state.pollID).call().then(function(reward){
+        if(reward!= that.state.voterReward)
+          that.setState({voterReward:reward});
+      });
+      
     }
     async handleGetPullID() {
-        console.log('handleGetPullID');
+        //console.log('handleGetPullID');
     }
 
     async claimReward() {
@@ -82,23 +79,7 @@ class Voting extends Component {
         });
     }
 
-    async handleGetPollStage() {
-        if (this.state['submiting'])
-            return;
-        this.setState({
-            'submiting': true
-        });
-        let pollID = this.state['pollID'];
-
-        let result =  await this.VotingHeplperInstance.methods.getPollStage(pollID).call();
-        this.setState({
-            'submiting': false,
-            'pollStatus':result[0],
-            'commitEndate': result[3],
-            'revealEndate': result[4],
-        });
-    }
-
+    
     async handeRevealVote() {
         if (this.state['submiting'])
             return;
@@ -146,8 +127,8 @@ class Voting extends Component {
 
         
 
-        console.log('choice',choice);
-        console.log('salt',salt);
+        //console.log('choice',choice);
+        //console.log('salt',salt);
 
         let token = await this.contracts.BBTCRHelper.methods.getToken(this.props.componentPros.listID).call();
     
@@ -155,7 +136,7 @@ class Voting extends Component {
 
         var allowance = await ERCIntance.methods.allowance(this.props.accounts[0], this.VotingInstance.address).call();
 
-        console.log(allowance)
+        //console.log(allowance)
         
         let secretHash = this.Utils.soliditySha3(choice, salt);
         bboAmount = this.Utils.toWei(bboAmount, 'ether');
@@ -185,22 +166,30 @@ class Voting extends Component {
     }
 
 
-    displayTime(time){
-        if(time>0){
-         return new Date(time*1000).toISOString()
+    displayTime(){
+      let now = new Date()/1000;
+      let time = this.state.commitEndDate>now?this.state.commitEndDate:this.state.revealEndDate>now?this.state.revealEndDate:0
+       if(time>0){
+           return (
+            <p>Time Remaining:
+            <span>
+            <Countdown date={time*1000} />
+            </span>
+             </p>
+            )
         }else{
-            return new Date().toISOString()
+            return ''
         }
     }
     displayForm(){
         let now = new Date()/1000;
-        if(this.state.commitEndate && this.state.revealEndate){
-            if(now < this.state.commitEndate){
+        //console.log(this.state.commitEndDate < now && now < this.state.revealEndDate)
+        if(this.state.commitEndDate && this.state.revealEndDate){
+            if(now < this.state.commitEndDate){
                 if(this.state.votingState != 'Commit Vote')
                     this.setState({votingState: 'Commit Vote'})
                 return this.displayCommit()
-            }
-            if(this.state.commitEndate < now < this.state.revealEndate){
+            }else if(this.state.commitEndDate < now && now < this.state.revealEndDate){
                 if(this.state.votingState != 'Reveal Vote')
                     this.setState({votingState: 'Reveal Vote'})
                 return this.displayReveal()
@@ -215,7 +204,7 @@ class Voting extends Component {
         }
     }
     displayReward(){
-         this.getReward();
+        this.getReward();
         return(
             <div>
             <h3>Your Reward: {this.state.voterReward}</h3>
@@ -325,20 +314,15 @@ class Voting extends Component {
         if(this.account != this.props.accounts[0]) {
             this.account = this.props.accounts[0]
         }
-        if(this.props.componentPros && !this.state.pollID){
-            this.getPollID();
-        }
-        if(!this.state.pollStatus && this.state.pollID){
-            this.handleGetPollStage();
-        }
+        
         return (
             <div>
             <h3 className = "newstype">Stage : {this.state.votingState}</h3>
             <p>Name: {this.props.componentPros.name} </p>
             <p>Poll ID: {this.state.pollID} </p>
-            <p>Now: {this.displayTime(0)} </p>
-            <p>Commit Enddate: {this.displayTime(this.state.commitEndate)} </p>
-            <p>Reveal Enddate: {this.displayTime(this.state.revealEndate)} </p>
+
+            
+            <p>{this.displayTime()} </p>
 
             {this.displayForm()}
 

@@ -52,7 +52,6 @@ class ProgramLoading extends Component {
     if (this.props.loadingComp) {
       return this.props.loadingComp
     }
-    console.log(this.props.accounts[0], this.props.drizzleStatus.initialized)
     return (
        <main className="container loading-screen">
        <div className="pure-g">

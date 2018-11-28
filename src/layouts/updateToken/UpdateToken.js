@@ -18,7 +18,7 @@ class UpdateToken extends Component {
     }
 
     async updateParams () {
-        console.log('update token');
+        //console.log('update token');
         if (this.state['submiting'])
             return;
         var that = this;

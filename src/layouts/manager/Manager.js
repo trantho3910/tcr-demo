@@ -88,14 +88,14 @@ class Manager extends Component {
   async handleSubmit() {
     // check allowance
 
-    console.log('handleSubmit ....')
+    //console.log('handleSubmit ....')
     if(this.state['bboAmount']>0){
       if(this.state['submiting'])
         return;
       this.setState({'submiting':true});
       var allowance = await this.contracts['BBOTest'].methods.allowance(this.props.accounts[0], this.contracts.BBOHoldingContract.address).call();
       //var allowance = this.props.contracts['BBOTest']['allowance'][this.bboAllowanceKey].value;
-      console.log(allowance);
+      //console.log(allowance);
       var that = this;
       if(allowance > 0){
         if(this.context.drizzle.web3.utils.fromWei(allowance, 'ether') == this.state['bboAmount']){
@@ -112,7 +112,7 @@ class Manager extends Component {
             }, 5000);
           }, 5000);
         }
-        console.log('here 1');
+        //console.log('here 1');
       }else{
         // do approve
         
@@ -143,7 +143,7 @@ class Manager extends Component {
   componentDidMount(){
     // let that = this;
     //  this.contracts.BBTCRHelper.methods.getListParams(10).call().then(function(rs){
-    //     console.log(rs)
+    //     //console.log(rs)
     //     that.setState({listParams: rs});
 
     //   });
@@ -177,7 +177,7 @@ class Manager extends Component {
       return 'Loading...'
   }
   displayCreateBtn(){
-    console.log(this.props.accounts[0])
+    //console.log(this.props.accounts[0])
     if(this.props.accounts[0] == '0xb10ca39DFa4903AE057E8C26E39377cfb4989551')
     return(
         <div>
